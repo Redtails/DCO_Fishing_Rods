@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Maintenance Request Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    form {
+      background-color: #ffffff;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    .form-field {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #0078d7;
+      outline: none;
+    }
+
+    .submit-button {
+      background-color: #0078d7;
+      color: #ffffff;
+      font-size: 16px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.2s ease;
+    }
+
+    .submit-button:hover {
+      background-color: #005fa3;
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 6px;
+      display: none;
+      font-weight: 500;
+    }
+
+    .success {
+      background-color: #e0f7e9;
+      color: #2e7d32;
+    }
+
+    .error {
+      background-color: #fdecea;
+      color: #b00020;
+    }
+  </style>
+</head>
+<body>
+
+  <form id="maintenanceForm" action="#" method="POST" novalidate>
+    <h2>Maintenance Request</h2>
+
+    <div class="form-field">
+      <label for="machineId">Machine ID / Name</label>
+      <input type="text" id="machineId" name="machineId" required>
+    </div>
+
+    <div class="form-field">
+      <label for="reportedBy">Reported By</label>
+      <input type="text" id="reportedBy" name="reportedBy" required>
+    </div>
+
+    <div class="form-field">
+      <label for="priority">Priority Level</label>
+      <select id="priority" name="priority" required>
+        <option value="">-- Select Priority --</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+        <option value="critical">Critical</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="description">Issue Description</label>
+      <textarea id="description" name="description" rows="4" required></textarea>
+    </div>
+
+    <div class="form-field">
+      <label for="dateReported">Date Reported</label>
+      <input type="date" id="dateReported" name="dateReported" required>
+    </div>
+
+    <div class="form-field">
+      <button type="submit" class="submit-button">Submit</button>
+    </div>
+
+    <div class="message success" id="successMessage">✅ Request submitted successfully!</div>
+    <div class="message error" id="errorMessage">⚠️ Please complete all required fields.</div>
+  </form>
+
+  <script>
+    const form = document.getElementById('maintenanceForm');
+    const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      successMessage.style.display = 'none';
+      errorMessage.style.display = 'none';
+
+      const machineId = document.getElementById('machineId').value.trim();
+      const reportedBy = document.getElementById('reportedBy').value.trim();
+      const priority = document.getElementById('priority').value;
+      const description = document.getElementById('description').value.trim();
+      const dateReported = document.getElementById('dateReported').value;
+
+      if (machineId && reportedBy && priority && description && dateReported) {
+        successMessage.style.display = 'block';
+        form.reset();
+        setTimeout(() => successMessage.style.display = 'none', 3000);
+      } else {
+        errorMessage.style.display = 'block';
+        setTimeout(() => errorMessage.style.display = 'none', 3000);
+      }
+    });
+  </script>
+
+</body>
+</html>

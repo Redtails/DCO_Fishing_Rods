@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Defect Entry Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    form {
+      background-color: #ffffff;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    .form-field {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #0078d7;
+      outline: none;
+    }
+
+    .submit-button {
+      background-color: #0078d7;
+      color: #ffffff;
+      font-size: 16px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.2s ease;
+    }
+
+    .submit-button:hover {
+      background-color: #005fa3;
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 6px;
+      display: none;
+      font-weight: 500;
+    }
+
+    .success {
+      background-color: #e0f7e9;
+      color: #2e7d32;
+    }
+
+    .error {
+      background-color: #fdecea;
+      color: #b00020;
+    }
+
+    @media (max-width: 600px) {
+      form {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<script>
+  const role = sessionStorage.getItem('role');
+
+  if (role !== 'technician' && role !== 'admin') {
+    alert("🚫 Access denied. You are not authorized to view this page.");
+    window.location.href = "dashboard.html";
+  }
+</script>
+<body>
+
+  <form id="defectForm" action="#" method="POST" novalidate>
+    <h2>Defect Entry</h2>
+
+    <div class="form-field">
+      <label for="batchNumber">Batch ID</label>
+      <input type="text" id="batchNumber" name="batchNumber" required>
+    </div>
+
+    <div class="form-field">
+      <label for="defectType">Defect Type</label>
+      <input type="text" id="defectType" name="defectType" required>
+    </div>
+
+    <div class="form-field">
+      <label for="shift">Shift</label>
+      <select id="shift" name="shift" required>
+        <option value="">-- Select Shift --</option>
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="technicianId">Technician ID</label>
+      <input type="number" id="technicianId" name="technicianId" required>
+    </div>
+
+    <div class="form-field">
+      <label for="notes">Notes</label>
+      <textarea id="notes" name="notes" rows="3"></textarea>
+    </div>
+
+    <div class="form-field">
+      <button type="submit" class="submit-button">Submit</button>
+    </div>
+
+    <div class="message success" id="successMessage">✅ Defect submitted successfully!</div>
+    <div class="message error" id="errorMessage">⚠️ Please fill out all fields correctly.</div>
+  </form>
+
+  <script>
+    const form = document.getElementById('defectForm');
+    const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      successMessage.style.display = 'none';
+      errorMessage.style.display = 'none';
+
+      const payload = {
+        batchNumber: document.getElementById('batchNumber').value,
+        defectType: document.getElementById('defectType').value,
+        shift: document.getElementById('shift').value,
+        technicianId: parseInt(document.getElementById('technicianId').value),
+        notes: document.getElementById('notes').value
+      };
+
+      if (payload.batchNumber && payload.defectType && payload.shift && payload.technicianId) {
+        const res = await fetch('http://localhost:3000/api/defect-entry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          successMessage.style.display = 'block';
+          form.reset();
+          setTimeout(() => successMessage.style.display = 'none', 3000);
+        } else {
+          errorMessage.style.display = 'block';
+          setTimeout(() => errorMessage.style.display = 'none', 3000);
+        }
+      } else {
+        errorMessage.style.display = 'block';
+        setTimeout(() => errorMessage.style.display = 'none', 3000);
+      }
+    });
+  </script>
+
+</body>
+</html>

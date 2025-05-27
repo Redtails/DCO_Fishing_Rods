@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Inventory Update Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    form {
+      background-color: #ffffff;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    .form-field {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    input[type="number"],
+    input[type="text"],
+    input[type="date"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease;
+    }
+
+    input:focus {
+      border-color: #0078d7;
+      outline: none;
+    }
+
+    .submit-button {
+      background-color: #0078d7;
+      color: #ffffff;
+      font-size: 16px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.2s ease;
+    }
+
+    .submit-button:hover {
+      background-color: #005fa3;
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 6px;
+      display: none;
+      font-weight: 500;
+    }
+
+    .success {
+      background-color: #e0f7e9;
+      color: #2e7d32;
+    }
+
+    .error {
+      background-color: #fdecea;
+      color: #b00020;
+    }
+
+    @media (max-width: 600px) {
+      form {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <form id="inventoryForm" action="#" method="POST" novalidate>
+    <h2>Inventory Update</h2>
+
+    <div class="form-field">
+      <label for="quantity">Quantity</label>
+      <input type="number" id="quantity" name="quantity" placeholder="e.g. 100" required aria-label="Enter quantity">
+    </div>
+
+    <div class="form-field">
+      <label for="type">Type</label>
+      <input type="text" id="type" name="type" maxlength="50" placeholder="e.g. Widget A" required aria-label="Enter item type">
+    </div>
+
+    <div class="form-field">
+      <label for="productionDate">Date of Production</label>
+      <input type="date" id="productionDate" name="productionDate" required aria-label="Enter production date">
+    </div>
+
+    <div class="form-field">
+      <button type="submit" class="submit-button">Submit</button>
+    </div>
+
+    <div class="message success" id="successMessage">✅ Inventory updated successfully!</div>
+    <div class="message error" id="errorMessage">⚠️ Please fill out all fields correctly.</div>
+  </form>
+
+  <script>
+    const form = document.getElementById('inventoryForm');
+    const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      successMessage.style.display = 'none';
+      errorMessage.style.display = 'none';
+
+      const quantity = document.getElementById('quantity').value.trim();
+      const type = document.getElementById('type').value.trim();
+      const productionDate = document.getElementById('productionDate').value;
+
+      if (quantity && type && productionDate) {
+        successMessage.style.display = 'block';
+        form.reset();
+        setTimeout(() => successMessage.style.display = 'none', 3000);
+      } else {
+        errorMessage.style.display = 'block';
+        setTimeout(() => errorMessage.style.display = 'none', 3000);
+      }
+    });
+  </script>
+
+</body>
+</html>
+
+

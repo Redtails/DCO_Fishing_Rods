@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DCO Forms Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f2f2f2;
+      text-align: center;
+      padding: 50px;
+    }
+    h1 {
+      color: #0078d7;
+    }
+    a.button {
+      display: inline-block;
+      margin: 10px;
+      padding: 15px 25px;
+      background-color: #0078d7;
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    a.button:hover {
+      background-color: #005fa3;
+    }
+  </style>
+</head>
+<body>
+  <h1>DCO Control Systems Portal</h1>
+
+  <a class="form-link" href="defect-entry.html" id="defectLink" style="display: none;">Defect Entry</a>
+  <a class="button" href="inventory-update.html">Inventory Update</a>
+  <a class="button" href="login.html">Login</a>
+  <a class="button" href="inspection-report.html">Inspection Report</a>
+  <a class="button" href="work-order.html">Work Order Submission</a>
+  <a class="button" href="maintenance-request.html">Maintenance Request</a>
+  <a class="button" href="calibration-log.html">Calibration Log Entry</a>
+
+  <!-- Admin-only: Add New User link -->
+  <a class="button" href="admin-user-add.html" id="addUserLink" style="display: none;">➕ Add New User</a>
+
+  <script>
+    const role = sessionStorage.getItem('role');
+
+    if (role === 'technician' || role === 'admin') {
+      document.getElementById('defectLink').style.display = 'inline-block';
+    }
+
+    if (role === 'admin') {
+      document.getElementById('addUserLink').style.display = 'inline-block';
+    }
+  </script>
+</body>
+</html>
+
