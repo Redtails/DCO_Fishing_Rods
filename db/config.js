@@ -1,9 +1,9 @@
 module.exports = {
-  user: 'sqladmin',                     // SQL username
-  password: 'Dco$ystem2025!',           // SQL password (case-sensitive)
-  server: 'dcodbserver2025.database.windows.net', // From Azure portal
-  database: 'DCO_DB',
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  server: process.env.DB_SERVER,
+  database: process.env.DB_DATABASE,
   options: {
-    encrypt: true                       // Required for Azure SQL
+    encrypt: true
   }
 };
