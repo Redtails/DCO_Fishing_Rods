@@ -93,15 +93,19 @@
   </div>
 
   <script>
-    // role‐based visibility (unchanged)
     const role = sessionStorage.getItem('role');
+
     if (role === 'technician' || role === 'admin') {
-      document.getElementById('defectLink').style.display = 'block';
+      const defectLink = document.getElementById('defectLink');
+      defectLink.style.display = 'flex';
     }
+
     if (role === 'admin') {
-      document.getElementById('addUserLink').style.display = 'block';
+      const addUserLink = document.getElementById('addUserLink');
+      addUserLink.style.display = 'flex';
     }
   </script>
+
 </body>
 </html>
 
