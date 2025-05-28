@@ -15,28 +15,44 @@
       align-items: center;
       min-height: 100vh;
     }
+
     .login-container {
       background-color: #ffffff;
-      padding: 30px 40px;
       border-radius: 10px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
       width: 100%;
       max-width: 400px;
     }
+
+    /* Fishing banner */
+    .banner {
+      height: 150px;
+      background: url('https://images.unsplash.com/photo-1517957754645-5bae56f75af1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60')
+                  center/cover no-repeat;
+    }
+
+    .login-content {
+      padding: 30px 40px;
+    }
+
     h2 {
       text-align: center;
       color: #333;
       margin-bottom: 10px;
     }
+
     .copyright {
       text-align: center;
       font-size: 12px;
       color: #888;
       margin-bottom: 30px;
     }
+
     .form-field {
       margin-bottom: 20px;
     }
+
     input[type="text"],
     input[type="password"] {
       width: 100%;
@@ -47,10 +63,12 @@
       box-sizing: border-box;
       transition: border-color 0.2s ease;
     }
+
     input:focus {
       border-color: #0078d7;
       outline: none;
     }
+
     .submit-button {
       background-color: #0078d7;
       color: #ffffff;
@@ -62,9 +80,11 @@
       width: 100%;
       transition: background-color 0.2s ease;
     }
+
     .submit-button:hover {
       background-color: #005fa3;
     }
+
     .message {
       margin-top: 15px;
       padding: 12px;
@@ -72,35 +92,51 @@
       display: none;
       font-weight: 500;
     }
+
     .success {
       background-color: #e0f7e9;
       color: #2e7d32;
     }
+
     .error {
       background-color: #fdecea;
       color: #b00020;
+    }
+
+    @media (max-width: 480px) {
+      .login-content {
+        padding: 20px;
+      }
+      .banner {
+        height: 120px;
+      }
     }
   </style>
 </head>
 <body>
 
   <div class="login-container">
-    <h2>Login</h2>
-    <div class="copyright">&copy; DCO Control Systems</div>
+    <!-- Fishing banner -->
+    <div class="banner"></div>
 
-    <form id="loginForm" novalidate>
-      <div class="form-field">
-        <input type="text" id="username" name="username" placeholder="Username" required aria-label="Enter username">
-      </div>
-      <div class="form-field">
-        <input type="password" id="password" name="password" placeholder="Password" required aria-label="Enter password">
-      </div>
-      <div class="form-field">
-        <button type="submit" class="submit-button">Log In</button>
-      </div>
-      <div class="message success" id="successMessage">✅ Login successful. Redirecting…</div>
-      <div class="message error" id="errorMessage">⚠️ Invalid login. Please try again.</div>
-    </form>
+    <div class="login-content">
+      <h2>Login</h2>
+      <div class="copyright">&copy; DCO Control Systems</div>
+
+      <form id="loginForm" novalidate>
+        <div class="form-field">
+          <input type="text" id="username" name="username" placeholder="Username" required aria-label="Enter username">
+        </div>
+        <div class="form-field">
+          <input type="password" id="password" name="password" placeholder="Password" required aria-label="Enter password">
+        </div>
+        <div class="form-field">
+          <button type="submit" class="submit-button">Log In</button>
+        </div>
+        <div class="message success" id="successMessage">✅ Login successful. Redirecting…</div>
+        <div class="message error" id="errorMessage">⚠️ Invalid login. Please try again.</div>
+      </form>
+    </div>
   </div>
 
   <script>
