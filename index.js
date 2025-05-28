@@ -10,20 +10,20 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Serve static HTML files from 'rod-management' directory
-app.use(express.static(path.join(__dirname, 'rod-management')));
+// Serve static HTML files from your actual folder name: 'rod management'
+app.use(express.static(path.join(__dirname, 'rod management')));
 
 // API routes
 app.use('/api', formRoutes);
 
 // Serve dashboard.html on root route
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'rod-management', 'dashboard.html'));
+  res.sendFile(path.join(__dirname, 'rod management', 'dashboard.html'));
 });
 
-// Catch-all for unknown routes to handle 404 or frontend routing
-//app.get('*', (req, res) => {
-// res.status(404).sendFile(path.join(__dirname, 'rod-management', '404.html'));
+// (Optional) If you ever add a 404 page named 404.html in that folder:
+// app.get('*', (req, res) => {
+//   res.status(404).sendFile(path.join(__dirname, 'rod management', '404.html'));
 // });
 
 // Start server
