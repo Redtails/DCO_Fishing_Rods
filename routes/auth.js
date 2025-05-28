@@ -1,145 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Login Form</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: "Segoe UI", Roboto, sans-serif;
-      background-color: #f2f2f2;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-    .login-container {
-      background-color: #ffffff;
-      padding: 30px 40px;
-      border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 400px;
-    }
-    h2 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 10px;
-    }
-    .copyright {
-      text-align: center;
-      font-size: 12px;
-      color: #888;
-      margin-bottom: 30px;
-    }
-    .form-field {
-      margin-bottom: 20px;
-    }
-    input[type="text"],
-    input[type="password"] {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-sizing: border-box;
-      transition: border-color 0.2s ease;
-    }
-    input:focus {
-      border-color: #0078d7;
-      outline: none;
-    }
-    .submit-button {
-      background-color: #0078d7;
-      color: #ffffff;
-      font-size: 16px;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-      transition: background-color 0.2s ease;
-    }
-    .submit-button:hover {
-      background-color: #005fa3;
-    }
-    .message {
-      margin-top: 15px;
-      padding: 12px;
-      border-radius: 6px;
-      display: none;
-      font-weight: 500;
-    }
-    .success {
-      background-color: #e0f7e9;
-      color: #2e7d32;
-    }
-    .error {
-      background-color: #fdecea;
-      color: #b00020;
-    }
-  </style>
-</head>
-<body>
+// routes/auth.js
 
-  <div class="login-container">
-    <h2>Login</h2>
-    <div class="copyright">&copy; DCO Control Systems</div>
+const express = require('express');
+const sql     = require('mssql');
+const bcrypt  = require('bcryptjs');
+const config  = require('../db/config');
 
-    <form id="loginForm" novalidate>
-      <div class="form-field">
-        <input type="text" id="username" name="username" placeholder="Username" required aria-label="Enter username">
-      </div>
-      <div class="form-field">
-        <input type="password" id="password" name="password" placeholder="Password" required aria-label="Enter password">
-      </div>
-      <div class="form-field">
-        <button type="submit" class="submit-button">Log In</button>
-      </div>
-      <div class="message success" id="successMessage">✅ Login successful. Redirecting…</div>
-      <div class="message error" id="errorMessage">⚠️ Invalid login. Please try again.</div>
-    </form>
-  </div>
+const router = express.Router();
 
-  <script>
-    const form = document.getElementById('loginForm');
-    const successMessage = document.getElementById('successMessage');
-    const errorMessage   = document.getElementById('errorMessage');
+// POST /api/login
+router.post('/login', async (req, res) => {
+  const { username, password } = req.body;
 
-    form.addEventListener('submit', async function(event) {
-      event.preventDefault();
-      successMessage.style.display = 'none';
-      errorMessage.style.display   = 'none';
+  try {
+    await sql.connect(config);
+    const result = await sql.query`
+      SELECT user_id, password_hash, role
+      FROM dbo.Users
+      WHERE username = ${username}
+    `;
 
-      const payload = {
-        username: document.getElementById('username').value.trim(),
-        password: document.getElementById('password').value
-      };
+    if (!result.recordset.length) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
 
-      try {
-        const res = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+    const { password_hash, role } = result.recordset[0];
+    if (!bcrypt.compareSync(password, password_hash)) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
 
-        if (res.ok) {
-          const { role } = await res.json();
-          sessionStorage.setItem('role', role);
-          successMessage.style.display = 'block';
-          setTimeout(() => {
-            window.location.href = '/dashboard';
-          }, 1000);
-        } else {
-          throw new Error('Invalid credentials');
-        }
-      } catch (err) {
-        errorMessage.style.display = 'block';
-      }
-    });
-  </script>
+    // Success: return the user role
+    res.json({ role });
+  } catch (err) {
+    console.error('Login error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
-</body>
-</html>
+module.exports = router;
+
