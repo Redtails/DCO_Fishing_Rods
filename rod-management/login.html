@@ -25,8 +25,18 @@
     }
     /* Local pixel-art banner */
     .banner {
-      height: 150px;
-      background: url('images/fishing-rod-banner.png') center/cover no-repeat;
+      /* make it a bit taller to show the whole rod */
+      height: 200px;
+
+      background-image: url('images/fishing-rod-banner.png');
+      background-repeat: no-repeat;
+
+      background-position: center bottom;
+
+      background-size: contain;
+
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
     }
     .login-content {
       padding: 30px 40px;
