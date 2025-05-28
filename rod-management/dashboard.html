@@ -2,66 +2,107 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>DCO Forms Dashboard</title>
+  <title>DCO Control Systems Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    :root {
+      --primary: #0078d7;
+      --primary-dark: #005fa3;
+      --bg: #f2f2f2;
+      --card-bg: #ffffff;
+      --text: #333333;
+      --gap: 20px;
+    }
+
+    /* reset & box‐sizing */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: "Segoe UI", sans-serif;
-      background-color: #f2f2f2;
-      text-align: center;
-      padding: 50px;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 40px;
     }
+
+    .container {
+      width: 100%;
+      max-width: 1000px;
+    }
+
     h1 {
-      color: #0078d7;
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: var(--gap);
+      font-size: 2.5rem;
     }
-    a.button {
-      display: inline-block;
-      margin: 10px;
-      padding: 15px 25px;
-      background-color: #0078d7;
-      color: white;
-      text-decoration: none;
-      font-size: 16px;
+
+    /* grid of cards */
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--gap);
+    }
+
+    .nav-grid a {
+      background-color: var(--card-bg);
       border-radius: 8px;
-      transition: background 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-decoration: none;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+      color: var(--primary);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
     }
-    a.button:hover {
-      background-color: #005fa3;
+
+    .nav-grid a:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+      background-color: var(--primary);
+      color: #fff;
+    }
+
+    /* Admin add‐user special icon */
+    #addUserLink::before {
+      content: "➕ ";
+      font-size: 1.2em;
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 20px; }
+      h1 { font-size: 2rem; }
     }
   </style>
 </head>
 <body>
-  <!-- Redirect to login if not authenticated -->
+  <div class="container">
+    <h1>DCO Control Systems Portal</h1>
+    <div class="nav-grid">
+      <a href="defect-entry.html"   id="defectLink">Defect Entry</a>
+      <a href="inventory-update.html">Inventory Update</a>
+      <a href="inspection-report.html">Inspection Report</a>
+      <a href="work-order.html">Work Order Submission</a>
+      <a href="maintenance-request.html">Maintenance Request</a>
+      <a href="calibration-log.html">Calibration Log Entry</a>
+      <a href="admin-user-add.html"  id="addUserLink">Add New User</a>
+    </div>
+  </div>
+
   <script>
+    // role‐based visibility (unchanged)
     const role = sessionStorage.getItem('role');
-    if (!role) {
-      window.location.href = '/';
-    }
-  </script>
-
-  <h1>DCO Control Systems Portal</h1>
-
-  <!-- Technician & Admin -->
-  <a class="button" href="defect-entry.html" id="defectLink" style="display: none;">Defect Entry</a>
-  <!-- Everyone who’s logged in can update inventory -->
-  <a class="button" href="inventory-update.html">Inventory Update</a>
-  <a class="button" href="inspection-report.html">Inspection Report</a>
-  <a class="button" href="work-order.html">Work Order Submission</a>
-  <a class="button" href="maintenance-request.html">Maintenance Request</a>
-  <a class="button" href="calibration-log.html">Calibration Log Entry</a>
-
-  <!-- Admin-only -->
-  <a class="button" href="admin-user-add.html" id="addUserLink" style="display: none;">➕ Add New User</a>
-
-  <script>
-    // Already fetched role above
     if (role === 'technician' || role === 'admin') {
-      document.getElementById('defectLink').style.display = 'inline-block';
+      document.getElementById('defectLink').style.display = 'block';
     }
     if (role === 'admin') {
-      document.getElementById('addUserLink').style.display = 'inline-block';
+      document.getElementById('addUserLink').style.display = 'block';
     }
   </script>
 </body>
 </html>
+
 
