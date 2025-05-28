@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DCO Reports Dashboard</n  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f2f2f2;
+      padding: 20px;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      color: #0078d7;
+      margin-bottom: 20px;
+    }
+    section {
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #0078d7;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>DCO Reports Dashboard</h1>
+
+  <section id="defect-section">
+    <h2>Defect Entries</h2>
+    <table id="defect-table">
+      <thead>
+        <tr><th>Batch</th><th>Type</th><th>Shift</th><th>Technician</th><th>Notes</th><th>Time</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section id="inventory-section">
+    <h2>Inventory Updates</h2>
+    <table id="inventory-table">
+      <thead>
+        <tr><th>Item</th><th>Quantity</th><th>Reason</th><th>Staff</th><th>Time</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section id="inspection-section">
+    <h2>Inspection Reports</h2>
+    <table id="inspection-table">
+      <thead>
+        <tr><th>Batch</th><th>Shift</th><th>Inspector</th><th>Findings</th><th>Time</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section id="maintenance-section">
+    <h2>Maintenance Requests</h2>
+    <table id="maintenance-table">
+      <thead>
+        <tr><th>Equipment</th><th>Issue</th><th>Requested By</th><th>Time</th><th>Status</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section id="calibration-section">
+    <h2>Calibration Log Entries</h2>
+    <table id="calibration-table">
+      <thead>
+        <tr><th>Equipment</th><th>Cal Date</th><th>By</th><th>Next Due</th><th>Notes</th><th>Time</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <script>
+    // Utility: fetch and populate table
+    async function loadData(endpoint, tableId, mapper) {
+      try {
+        const res = await fetch(`/api/${endpoint}`);
+        const data = await res.json();
+        const tbody = document.querySelector(`#${tableId} tbody`);
+        data.forEach(item => {
+          const row = document.createElement('tr');
+          mapper(item).forEach(text => {
+            const cell = document.createElement('td');
+            cell.textContent = text;
+            row.appendChild(cell);
+          });
+          tbody.appendChild(row);
+        });
+      } catch (e) {
+        console.error(`Failed to load ${endpoint}:`, e);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadData('defect-entry', 'defect-table', item => [
+        item.batch_id, item.defect_type, item.shift, item.technician_id, item.notes, new Date(item.timestamp).toLocaleString()
+      ]);
+
+      loadData('inventory-update', 'inventory-table', item => [
+        item.item_id, item.quantity, item.reason_code, item.staff_id, new Date(item.timestamp).toLocaleString()
+      ]);
+
+      loadData('inspection-report', 'inspection-table', item => [
+        item.batch_id, item.shift, item.inspector_id, item.findings, new Date(item.timestamp).toLocaleString()
+      ]);
+
+      loadData('maintenance-request', 'maintenance-table', item => [
+        item.equipment_id, item.issue_description, item.requested_by, new Date(item.timestamp).toLocaleString(), item.status || 'Pending'
+      ]);
+
+      loadData('calibration-log', 'calibration-table', item => [
+        item.equipment_id, item.calibration_date, item.calibrated_by, item.next_due_date, item.notes, new Date(item.timestamp).toLocaleString()
+      ]);
+    });
+  </script>
+</body>
+</html>
