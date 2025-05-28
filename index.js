@@ -17,15 +17,14 @@ app.use(express.static(path.join(__dirname, 'rod-management')));
 app.use('/api', formRoutes);
 
 // Serve dashboard.html on root route
-app.get('*', (req, res) => {
-   res.status(404).sendFile(path.join(__dirname, 'rod-management', '404.html'));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'rod-management', 'dashboard.html'));
 });
-
 
 // Catch-all for unknown routes to handle 404 or frontend routing
-app.get('*', (req, res) => {
-  res.status(404).sendFile(path.join(__dirname, 'rod-management', '404.html'));
-});
+//app.get('*', (req, res) => {
+// res.status(404).sendFile(path.join(__dirname, 'rod-management', '404.html'));
+// });
 
 // Start server
 app.listen(PORT, () => {
