@@ -31,26 +31,33 @@
   </style>
 </head>
 <body>
+  <!-- Redirect to login if not authenticated -->
+  <script>
+    const role = sessionStorage.getItem('role');
+    if (!role) {
+      window.location.href = '/';
+    }
+  </script>
+
   <h1>DCO Control Systems Portal</h1>
 
-  <a class="form-link" href="defect-entry.html" id="defectLink" style="display: none;">Defect Entry</a>
+  <!-- Technician & Admin -->
+  <a class="button" href="defect-entry.html" id="defectLink" style="display: none;">Defect Entry</a>
+  <!-- Everyone who’s logged in can update inventory -->
   <a class="button" href="inventory-update.html">Inventory Update</a>
-  <a class="button" href="login.html">Login</a>
   <a class="button" href="inspection-report.html">Inspection Report</a>
   <a class="button" href="work-order.html">Work Order Submission</a>
   <a class="button" href="maintenance-request.html">Maintenance Request</a>
   <a class="button" href="calibration-log.html">Calibration Log Entry</a>
 
-  <!-- Admin-only: Add New User link -->
+  <!-- Admin-only -->
   <a class="button" href="admin-user-add.html" id="addUserLink" style="display: none;">➕ Add New User</a>
 
   <script>
-    const role = sessionStorage.getItem('role');
-
+    // Already fetched role above
     if (role === 'technician' || role === 'admin') {
       document.getElementById('defectLink').style.display = 'inline-block';
     }
-
     if (role === 'admin') {
       document.getElementById('addUserLink').style.display = 'inline-block';
     }

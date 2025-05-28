@@ -1,32 +1,37 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const formRoutes = require('./routes/forms');
+const express    = require('express');
+const cors       = require('cors');
+const path       = require('path');
+const authRoutes = require('./routes/auth');   // login endpoint
+const formRoutes = require('./routes/forms');  // your form endpoints
 
-const app = express();
+const app  = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// ─── MIDDLEWARE ───────────────────────────────────────────────────────────────
 app.use(cors());
 app.use(express.json());
 
-// Serve static HTML files from your actual folder name: 'rod management'
+// ─── STATIC ASSETS ────────────────────────────────────────────────────────────
+// serve login.html, dashboard.html, and all other HTML/CSS/JS from rod‐management/
 app.use(express.static(path.join(__dirname, 'rod-management')));
 
-// API routes
+// ─── API ROUTES ────────────────────────────────────────────────────────────────
+// Login/auth must come first so it’s not overridden by formRoutes
+app.use('/api', authRoutes);
 app.use('/api', formRoutes);
 
-// Serve dashboard.html on root route
+// ─── PAGE ROUTING ──────────────────────────────────────────────────────────────
+// Public entrypoint: always show login first
 app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'rod-management', 'login.html'));
+});
+
+// Protected dashboard (client‐side checks role in sessionStorage)
+app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'rod-management', 'dashboard.html'));
 });
 
-// (Optional) If you ever add a 404 page named 404.html in that folder:
-// app.get('*', (req, res) => {
-//   res.status(404).sendFile(path.join(__dirname, 'rod management', '404.html'));
-// });
-
-// Start server
+// ─── START SERVER ─────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
   console.log(`✅ DCO API is running on http://localhost:${PORT}`);
 });
