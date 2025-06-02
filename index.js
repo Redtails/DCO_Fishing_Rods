@@ -8,11 +8,17 @@ const app  = express();
 const PORT = process.env.PORT || 3000;
 
 // ─── MIDDLEWARE ───────────────────────────────────────────────────────────────
-app.use(cors());
+// ✅ Explicit CORS config to allow frontend domain
+app.use(cors({
+  origin: 'https://dco-fishing-rods.onrender.com', // Allow your frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type']
+}));
+
 app.use(express.json());
 
 // ─── STATIC ASSETS ────────────────────────────────────────────────────────────
-// serve login.html, dashboard.html, and all other HTML/CSS/JS from rod‐management/
+// Serve login.html, dashboard.html, and all other HTML/CSS/JS from rod-management/
 app.use(express.static(path.join(__dirname, 'rod-management')));
 
 // ─── API ROUTES ────────────────────────────────────────────────────────────────
