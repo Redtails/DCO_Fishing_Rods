@@ -20,7 +20,7 @@ router.post('/defect-entry', async (req, res) => {
   }
 });
 
-// 2) Inventory Update (Updated to match frontend form fields)
+// 2) Inventory Update — aligned to your Render-hosted form (type → item_type, date → production_date)
 router.post('/inventory-update', async (req, res) => {
   const { quantity, type, productionDate } = req.body;
   try {
@@ -101,5 +101,6 @@ router.post('/calibration-log', async (req, res) => {
 });
 
 module.exports = router;
+
 
 
