@@ -19,16 +19,18 @@ router.post('/login', async (req, res) => {
       WHERE username = ${username}
     `;
 
+    // If no matching user
     if (!result.recordset.length) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     const { password_hash, role } = result.recordset[0];
+    // Compare the plaintext password to the stored hash
     if (!bcrypt.compareSync(password, password_hash)) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Success: return the user role
+    // Successful login → return the user’s role
     res.json({ role });
   } catch (err) {
     console.error('Login error:', err);
