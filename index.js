@@ -1,38 +1,33 @@
 const express    = require('express');
 const cors       = require('cors');
 const path       = require('path');
-const authRoutes = require('./routes/auth');   // login endpoint
-const formRoutes = require('./routes/forms');  // your form endpoints
+const authRoutes = require('./routes/auth');
+const formRoutes = require('./routes/forms');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
-// ─── MIDDLEWARE ───────────────────────────────────────────────────────────────
-// ✅ Explicit CORS config to allow frontend domain
+// ─── CORS FIX ────────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: 'https://dco-fishing-rods.onrender.com', // Allow your frontend
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: 'https://dco-fishing-rods.onrender.com',  // ✅ frontend origin
+  methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type']
 }));
 
 app.use(express.json());
 
 // ─── STATIC ASSETS ────────────────────────────────────────────────────────────
-// Serve login.html, dashboard.html, and all other HTML/CSS/JS from rod-management/
 app.use(express.static(path.join(__dirname, 'rod-management')));
 
-// ─── API ROUTES ────────────────────────────────────────────────────────────────
-// Login/auth must come first so it’s not overridden by formRoutes
+// ─── API ROUTES ───────────────────────────────────────────────────────────────
 app.use('/api', authRoutes);
 app.use('/api', formRoutes);
 
-// ─── PAGE ROUTING ──────────────────────────────────────────────────────────────
-// Public entrypoint: always show login first
+// ─── PAGE ROUTES ──────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'rod-management', 'login.html'));
 });
 
-// Protected dashboard (client‐side checks role in sessionStorage)
 app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'rod-management', 'dashboard.html'));
 });
