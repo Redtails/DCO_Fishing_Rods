@@ -157,12 +157,12 @@
     const form = document.getElementById('defectForm');
     const successMessage = document.getElementById('successMessage');
     const errorMessage = document.getElementById('errorMessage');
-
+  
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
       successMessage.style.display = 'none';
       errorMessage.style.display = 'none';
-
+  
       const payload = {
         batchNumber: document.getElementById('batchNumber').value,
         defectType: document.getElementById('defectType').value,
@@ -170,14 +170,14 @@
         technicianId: parseInt(document.getElementById('technicianId').value),
         notes: document.getElementById('notes').value
       };
-
+  
       if (payload.batchNumber && payload.defectType && payload.shift && payload.technicianId) {
-        const res = await fetch('http://localhost:3000/api/defect-entry', {
+        const res = await fetch('https://dco-fishing-rods.onrender.com/api/defect-entry', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-
+  
         if (res.ok) {
           successMessage.style.display = 'block';
           form.reset();
@@ -192,6 +192,7 @@
       }
     });
   </script>
+  
 
 </body>
 </html>
