@@ -133,7 +133,7 @@
     const successMessage = document.getElementById('successMessage');
     const errorMessage = document.getElementById('errorMessage');
 
-    form.addEventListener('submit', function(event) {
+    form.addEventListener('submit', async function(event) {
       event.preventDefault();
       successMessage.style.display = 'none';
       errorMessage.style.display = 'none';
@@ -143,9 +143,30 @@
       const productionDate = document.getElementById('productionDate').value;
 
       if (quantity && type && productionDate) {
-        successMessage.style.display = 'block';
-        form.reset();
-        setTimeout(() => successMessage.style.display = 'none', 3000);
+        try {
+          const res = await fetch('http://localhost:3000/api/inventory-update', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              quantity: parseInt(quantity),
+              itemType: type,
+              productionDate: productionDate
+            })
+          });
+
+          if (res.ok) {
+            successMessage.style.display = 'block';
+            form.reset();
+            setTimeout(() => successMessage.style.display = 'none', 3000);
+          } else {
+            throw new Error('Server error');
+          }
+        } catch (err) {
+          errorMessage.style.display = 'block';
+          setTimeout(() => errorMessage.style.display = 'none', 3000);
+        }
       } else {
         errorMessage.style.display = 'block';
         setTimeout(() => errorMessage.style.display = 'none', 3000);
@@ -155,5 +176,6 @@
 
 </body>
 </html>
+
 
 
