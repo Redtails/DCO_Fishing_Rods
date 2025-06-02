@@ -20,14 +20,14 @@ router.post('/defect-entry', async (req, res) => {
   }
 });
 
-// 2) Inventory Update
+// 2) Inventory Update (Updated to match frontend form fields)
 router.post('/inventory-update', async (req, res) => {
-  const { itemId, quantity, reasonCode, staffId } = req.body;
+  const { quantity, type, productionDate } = req.body;
   try {
     await sql.connect(config);
     await sql.query`
-      INSERT INTO dbo.InventoryRecord (item_id, quantity, reason_code, staff_id, timestamp)
-      VALUES (${itemId}, ${quantity}, ${reasonCode}, ${staffId}, GETDATE())
+      INSERT INTO dbo.InventoryRecord (quantity, item_type, production_date, timestamp)
+      VALUES (${quantity}, ${type}, ${productionDate}, GETDATE())
     `;
     res.status(200).send('Inventory update saved');
   } catch (err) {
@@ -101,4 +101,5 @@ router.post('/calibration-log', async (req, res) => {
 });
 
 module.exports = router;
+
 
