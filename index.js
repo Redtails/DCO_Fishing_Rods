@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 // ─── CORS FIX ────────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: 'https://dco-fishing-rods.onrender.com',  // ✅ frontend origin
+  origin: 'https://dco-fishing-rods.onrender.com', // ✅ exact frontend domain
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type']
 }));
