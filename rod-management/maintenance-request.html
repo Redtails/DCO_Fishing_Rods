@@ -1,96 +1,173 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Maintenance Request Form</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: "Segoe UI", Roboto, sans-serif; background-color: #f2f2f2; margin:0; padding:0;
-      display:flex; justify-content:center; align-items:center; min-height:100vh; }
-    form { background:#fff; padding:30px 40px; border-radius:10px;
-      box-shadow:0 4px 20px rgba(0,0,0,0.1); width:100%; max-width:600px; }
-    h2 { text-align:center; margin-bottom:25px; color:#333; }
-    .form-field { margin-bottom:20px; }
-    label { display:block; margin-bottom:8px; font-weight:600; color:#333; }
-    input, textarea, button { width:100%; padding:12px; font-size:16px;
-      border:1px solid #ccc; border-radius:6px; box-sizing:border-box;
-      transition:border-color .2s; }
-    input:focus, textarea:focus { border-color:#0078d7; outline:none; }
-    .submit-button { background:#0078d7; color:#fff; border:none;
-      cursor:pointer; padding:12px; border-radius:6px; transition:background-color .2s; }
-    .submit-button:hover { background:#005fa3; }
-    .message { margin-top:15px; padding:12px; border-radius:6px;
-      display:none; font-weight:500; text-align:center; }
-    .success { background:#e0f7e9; color:#2e7d32; }
-    .error   { background:#fdecea; color:#b00020; }
+    body {
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    form {
+      background-color: #ffffff;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    .form-field {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #0078d7;
+      outline: none;
+    }
+
+    .submit-button {
+      background-color: #0078d7;
+      color: #ffffff;
+      font-size: 16px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.2s ease;
+    }
+
+    .submit-button:hover {
+      background-color: #005fa3;
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 6px;
+      display: none;
+      font-weight: 500;
+    }
+
+    .success {
+      background-color: #e0f7e9;
+      color: #2e7d32;
+    }
+
+    .error {
+      background-color: #fdecea;
+      color: #b00020;
+    }
   </style>
 </head>
 <body>
-  <form id="maintenanceForm" novalidate>
+
+  <form id="maintenanceForm" action="#" method="POST" novalidate>
     <h2>Maintenance Request</h2>
+
     <div class="form-field">
       <label for="machineId">Machine ID / Name</label>
-      <input type="text" id="machineId" required>
+      <input type="text" id="machineId" name="machineId" required>
     </div>
+
     <div class="form-field">
-      <label for="reportedBy">Requested By (User ID)</label>
-      <input type="number" id="reportedBy" required>
+      <label for="reportedBy">Reported By</label>
+      <input type="text" id="reportedBy" name="reportedBy" required>
     </div>
+
+    <div class="form-field">
+      <label for="priority">Priority Level</label>
+      <select id="priority" name="priority" required>
+        <option value="">-- Select Priority --</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+        <option value="critical">Critical</option>
+      </select>
+    </div>
+
     <div class="form-field">
       <label for="description">Issue Description</label>
-      <textarea id="description" rows="4" required></textarea>
+      <textarea id="description" name="description" rows="4" required></textarea>
     </div>
-    <button type="submit" class="submit-button">Submit Request</button>
+
+    <div class="form-field">
+      <label for="dateReported">Date Reported</label>
+      <input type="date" id="dateReported" name="dateReported" required>
+    </div>
+
+    <div class="form-field">
+      <button type="submit" class="submit-button">Submit</button>
+    </div>
+
     <div class="message success" id="successMessage">✅ Request submitted successfully!</div>
-    <div class="message error"   id="errorMessage">⚠️ There was an error submitting the request.</div>
+    <div class="message error" id="errorMessage">⚠️ Please complete all required fields.</div>
   </form>
 
-  <script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', () => {
-      const form   = document.getElementById('maintenanceForm');
-      const okMsg  = document.getElementById('successMessage');
-      const errMsg = document.getElementById('errorMessage');
+  <script>
+    const form = document.getElementById('maintenanceForm');
+    const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
 
-      form.addEventListener('submit', async e => {
-        e.preventDefault();
-        okMsg.style.display = errMsg.style.display = 'none';
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      successMessage.style.display = 'none';
+      errorMessage.style.display = 'none';
 
-        // Build payload
-        const payload = {
-          equipmentId:      document.getElementById('machineId').value.trim(),
-          requestedBy:      Number(document.getElementById('reportedBy').value),
-          issueDescription: document.getElementById('description').value.trim()
-        };
+      const machineId = document.getElementById('machineId').value.trim();
+      const reportedBy = document.getElementById('reportedBy').value.trim();
+      const priority = document.getElementById('priority').value;
+      const description = document.getElementById('description').value.trim();
+      const dateReported = document.getElementById('dateReported').value;
 
-        // Log payload
-        console.log('🔍 maintenance-request payload:', payload);
+      console.log('🔍 maintenance-request payload:', payload);
 
-        // Validation
-        if (!payload.equipmentId || !payload.requestedBy || !payload.issueDescription) {
-          errMsg.textContent = '⚠️ Please fill out all fields correctly.';
-          return errMsg.style.display = 'block';
-        }
-
-        // Send to server
-        try {
-          const res = await fetch('/api/maintenance-request', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          if (!res.ok) throw new Error(`Status ${res.status}`);
-
-          form.reset();
-          okMsg.style.display = 'block';
-          setTimeout(() => okMsg.style.display = 'none', 3000);
-        } catch (err) {
-          console.error('Submit error:', err);
-          errMsg.textContent = '⚠️ Server error — could not save request.';
-          errMsg.style.display = 'block';
-        }
-      });
+      if (machineId && reportedBy && priority && description && dateReported) {
+        successMessage.style.display = 'block';
+        form.reset();
+        setTimeout(() => successMessage.style.display = 'none', 3000);
+      } else {
+        errorMessage.style.display = 'block';
+        setTimeout(() => errorMessage.style.display = 'none', 3000);
+      }
     });
   </script>
+
 </body>
 </html>
 
