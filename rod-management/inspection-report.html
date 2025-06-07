@@ -5,8 +5,9 @@
   <title>Inspection Report Form</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    /* Default system font + simple centered form */
     body {
-      font-family: "Segoe UI", Roboto, sans-serif;
+      font-family: sans-serif;
       background-color: #f2f2f2;
       margin: 0;
       padding: 0;
@@ -15,36 +16,27 @@
       align-items: center;
       min-height: 100vh;
     }
-
     form {
-      background-color: #ffffff;
+      background-color: #fff;
       padding: 30px 40px;
       border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
       width: 100%;
       max-width: 600px;
     }
-
     h2 {
       text-align: center;
-      color: #333;
       margin-bottom: 25px;
     }
-
     .form-field {
       margin-bottom: 20px;
     }
-
     label {
       display: block;
       margin-bottom: 8px;
       font-weight: 600;
-      color: #333;
     }
-
-    input,
-    select,
-    textarea {
+    input, select, textarea {
       width: 100%;
       padding: 12px;
       font-size: 16px;
@@ -53,17 +45,13 @@
       box-sizing: border-box;
       transition: border-color 0.2s ease;
     }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
+    input:focus, select:focus, textarea:focus {
       border-color: #0078d7;
       outline: none;
     }
-
     .submit-button {
       background-color: #0078d7;
-      color: #ffffff;
+      color: #fff;
       font-size: 16px;
       padding: 12px 20px;
       border: none;
@@ -72,24 +60,21 @@
       width: 100%;
       transition: background-color 0.2s ease;
     }
-
     .submit-button:hover {
       background-color: #005fa3;
     }
-
     .message {
       margin-top: 15px;
       padding: 12px;
       border-radius: 6px;
       display: none;
       font-weight: 500;
+      text-align: center;
     }
-
     .success {
       background-color: #e0f7e9;
       color: #2e7d32;
     }
-
     .error {
       background-color: #fdecea;
       color: #b00020;
@@ -98,7 +83,7 @@
 </head>
 <body>
 
-  <form id="inspectionForm" action="#" method="POST" novalidate>
+  <form id="inspectionForm" novalidate>
     <h2>Inspection Report</h2>
 
     <div class="form-field">
@@ -117,53 +102,63 @@
     </div>
 
     <div class="form-field">
-      <label for="result">Inspection Result</label>
-      <select id="result" name="result" required>
-        <option value="">-- Select Result --</option>
-        <option value="pass">Pass</option>
-        <option value="fail">Fail</option>
-        <option value="rework">Rework Required</option>
-      </select>
+      <label for="findings">Findings</label>
+      <textarea id="findings" name="findings" rows="4" placeholder="Describe your findings..." required></textarea>
     </div>
 
     <div class="form-field">
-      <label for="comments">Comments</label>
-      <textarea id="comments" name="comments" rows="4" placeholder="Optional notes..."></textarea>
+      <button type="submit" class="submit-button">Submit Report</button>
     </div>
 
-    <div class="form-field">
-      <button type="submit" class="submit-button">Submit</button>
+    <div class="message success" id="successMessage">
+      ✅ Report submitted successfully!
     </div>
-
-    <div class="message success" id="successMessage">✅ Report submitted successfully!</div>
-    <div class="message error" id="errorMessage">⚠️ Please complete all required fields.</div>
+    <div class="message error" id="errorMessage">
+      ⚠️ There was an error submitting the report. Please try again.
+    </div>
   </form>
 
   <script>
     const form = document.getElementById('inspectionForm');
-    const successMessage = document.getElementById('successMessage');
-    const errorMessage = document.getElementById('errorMessage');
+    const okMsg = document.getElementById('successMessage');
+    const errMsg = document.getElementById('errorMessage');
 
-    form.addEventListener('submit', function(event) {
-      event.preventDefault();
-      successMessage.style.display = 'none';
-      errorMessage.style.display = 'none';
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      okMsg.style.display = 'none';
+      errMsg.style.display = 'none';
 
-      const inspector = document.getElementById('inspectorName').value.trim();
-      const date = document.getElementById('inspectionDate').value;
-      const item = document.getElementById('itemInspected').value.trim();
-      const result = document.getElementById('result').value;
+      // Gather values
+      const payload = {
+        batch_id:      document.getElementById('itemInspected').value.trim(),
+        shift:         null,  // adjust or remove as needed
+        inspector_id:  document.getElementById('inspectorName').value.trim(),
+        findings:      document.getElementById('findings').value.trim()
+      };
 
-      if (inspector && date && item && result) {
-        successMessage.style.display = 'block';
+      // Simple validation
+      if (!payload.batch_id || !payload.inspector_id || !payload.findings) {
+        errMsg.textContent = '⚠️ Please fill out all required fields.';
+        return errMsg.style.display = 'block';
+      }
+
+      try {
+        const res = await fetch('/api/inspection-report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+
         form.reset();
-        setTimeout(() => successMessage.style.display = 'none', 3000);
-      } else {
-        errorMessage.style.display = 'block';
-        setTimeout(() => errorMessage.style.display = 'none', 3000);
+        okMsg.style.display = 'block';
+        setTimeout(() => okMsg.style.display = 'none', 3000);
+      } catch (err) {
+        console.error(err);
+        errMsg.textContent = '⚠️ Server error — could not save report.';
+        errMsg.style.display = 'block';
       }
     });
   </script>
-
 </body>
 </html>
