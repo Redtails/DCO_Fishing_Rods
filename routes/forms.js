@@ -180,7 +180,7 @@ router.post('/maintenance-request', async (req, res) => {
       INSERT INTO dbo.MaintenanceRequest
         (equipment_id, issue_description, requested_by, timestamp)
       VALUES
-        (${equipmentId}, ${issueDescription}, ${requestedBy}, GETDATE())
+        (${equipmentId}, ${issueDescription}, ${requestedBy}, 'Pending', GETDATE())
     `;
     res.status(200).send('✅ Maintenance request saved');
   } catch (err) {
