@@ -170,17 +170,31 @@ router.get('/work-order', async (req, res) => {
 // POST /api/maintenance-request
 router.post('/maintenance-request', async (req, res) => {
   console.log('📬 maintenance-request payload:', req.body);
-  const { equipmentId, issueDescription, requestedBy } = req.body;
-  if (!equipmentId || !issueDescription || typeof requestedBy !== 'number') {
+  const {
+    machineId,
+    reportedBy,   // should be numeric user/staff ID
+    priority,
+    description,
+    dateReported  // YYYY-MM-DD
+  } = req.body;
+
+  if (
+    !machineId ||
+    typeof reportedBy !== 'number' ||
+    !priority ||
+    !description ||
+    !dateReported
+  ) {
     return res.status(400).send('❗ Invalid payload');
   }
+
   try {
     await sql.connect(config);
     await sql.query`
       INSERT INTO dbo.MaintenanceRequest
-        (equipment_id, issue_description, requested_by, timestamp)
+        (equipment_id, issue_description, requested_by, priority, date_reported, status, timestamp)
       VALUES
-        (${equipmentId}, ${issueDescription}, ${requestedBy}, 'Pending', GETDATE())
+        (${machineId}, ${description}, ${reportedBy}, ${priority}, ${dateReported}, 'Pending', GETDATE())
     `;
     res.status(200).send('✅ Maintenance request saved');
   } catch (err) {
@@ -194,7 +208,7 @@ router.get('/maintenance-request', async (req, res) => {
   try {
     await sql.connect(config);
     const result = await sql.query`
-      SELECT equipment_id, issue_description, requested_by, status, timestamp
+      SELECT equipment_id, issue_description, requested_by, priority, date_reported, status, timestamp
       FROM dbo.MaintenanceRequest
       ORDER BY timestamp DESC
     `;
@@ -246,7 +260,6 @@ router.get('/calibration-log', async (req, res) => {
 });
 
 module.exports = router;
-
 
 
 
