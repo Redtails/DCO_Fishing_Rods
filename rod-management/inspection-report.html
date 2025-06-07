@@ -79,11 +79,13 @@
       errMsg.style.display = 'none';
 
       const payload = {
-        inspector_id:  Number(document.getElementById('inspectorId').value),
-        shift:         document.getElementById('shift').value,
-        batch_id:      document.getElementById('itemInspected').value.trim(),
-        findings:      document.getElementById('findings').value.trim()
+      inspector_id:  Number(document.getElementById('inspectorId').value),
+      shift:         document.getElementById('shift').value,
+      batch_id:      document.getElementById('itemInspected').value.trim(),
+      findings:      document.getElementById('findings').value.trim(),
+      timestamp:     document.getElementById('inspectionDate').value  // <-- include the date
       };
+
 
       // Basic validation
       if (!payload.inspector_id || !payload.shift || !payload.batch_id || !payload.findings) {
