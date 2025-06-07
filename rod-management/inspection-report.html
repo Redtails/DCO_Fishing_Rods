@@ -69,9 +69,9 @@
   </form>
 
   <script>
-    const form     = document.getElementById('inspectionForm');
-    const okMsg    = document.getElementById('successMessage');
-    const errMsg   = document.getElementById('errorMessage');
+    const form   = document.getElementById('inspectionForm');
+    const okMsg  = document.getElementById('successMessage');
+    const errMsg = document.getElementById('errorMessage');
 
     form.addEventListener('submit', async e => {
       e.preventDefault();
@@ -79,13 +79,15 @@
       errMsg.style.display = 'none';
 
       const payload = {
-      inspector_id:  Number(document.getElementById('inspectorId').value),
-      shift:         document.getElementById('shift').value,
-      batch_id:      document.getElementById('itemInspected').value.trim(),
-      findings:      document.getElementById('findings').value.trim(),
-      timestamp:     document.getElementById('inspectionDate').value  // <-- include the date
+        inspector_id:  Number(document.getElementById('inspectorId').value),
+        shift:         document.getElementById('shift').value,
+        batch_id:      document.getElementById('itemInspected').value.trim(),
+        findings:      document.getElementById('findings').value.trim(),
+        timestamp:     document.getElementById('inspectionDate').value
       };
 
+      // **DEBUG LOG** – check exactly what's about to be sent
+      console.log('🔍 Payload about to send:', payload);
 
       // Basic validation
       if (!payload.inspector_id || !payload.shift || !payload.batch_id || !payload.findings) {
