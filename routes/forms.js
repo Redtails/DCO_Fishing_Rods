@@ -177,7 +177,7 @@ router.post('/maintenance-request', async (req, res) => {
     dateReported
   } = req.body;
 
-  // Validate presence + types
+  // validate presence & types
   if (
     !equipmentId ||
     typeof requestedBy !== 'number' ||
@@ -192,9 +192,21 @@ router.post('/maintenance-request', async (req, res) => {
     await sql.connect(config);
     await sql.query`
       INSERT INTO dbo.MaintenanceRequest
-        (equipment_id, issue_description, requested_by, priority, date_reported, status, timestamp)
+        (equipment_id,
+         issue_description,
+         requested_by,
+         priority,
+         date_reported,
+         status,
+         timestamp)
       VALUES
-        (${equipmentId}, ${issueDescription}, ${requestedBy}, ${priority}, ${dateReported}, 'Pending', GETDATE())
+        (${equipmentId},
+         ${issueDescription},
+         ${requestedBy},
+         ${priority},
+         ${dateReported},
+         'Pending',
+         GETDATE())
     `;
     res.status(200).send('✅ Maintenance request saved');
   } catch (err) {
@@ -208,7 +220,13 @@ router.get('/maintenance-request', async (req, res) => {
   try {
     await sql.connect(config);
     const result = await sql.query`
-      SELECT equipment_id, issue_description, requested_by, priority, date_reported, status, timestamp
+      SELECT equipment_id,
+             issue_description,
+             requested_by,
+             priority,
+             date_reported,
+             status,
+             timestamp
       FROM dbo.MaintenanceRequest
       ORDER BY timestamp DESC
     `;
@@ -218,6 +236,7 @@ router.get('/maintenance-request', async (req, res) => {
     res.status(500).send(err.message);
   }
 });
+
 
 /* 6) Calibration Log Entry */
 
