@@ -8,158 +8,121 @@
     body {
       font-family: "Segoe UI", Roboto, sans-serif;
       background-color: #f2f2f2;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      margin: 0; padding: 0;
+      display: flex; justify-content: center; align-items: center;
       min-height: 100vh;
     }
-
     form {
-      background-color: #ffffff;
-      padding: 30px 40px;
-      border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 600px;
+      background: #fff; padding: 30px 40px;
+      border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      width: 100%; max-width: 600px;
     }
-
-    h2 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 25px;
+    h2 { text-align:center; color:#333; margin-bottom:25px; }
+    .form-field { margin-bottom:20px; }
+    label { display:block; margin-bottom:8px; font-weight:600; color:#333; }
+    input, select, textarea, button {
+      width:100%; padding:12px; font-size:16px;
+      border:1px solid #ccc; border-radius:6px;
+      box-sizing:border-box; transition:border-color .2s;
     }
-
-    .form-field {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #333;
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-sizing: border-box;
-      transition: border-color 0.2s ease;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #0078d7;
-      outline: none;
-    }
-
+    input:focus, select:focus, textarea:focus { border-color:#0078d7; outline:none; }
     .submit-button {
-      background-color: #0078d7;
-      color: #ffffff;
-      font-size: 16px;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-      transition: background-color 0.2s ease;
+      background:#0078d7; color:#fff; border:none; cursor:pointer;
+      font-size:16px; padding:12px; border-radius:6px;
+      transition:background-color .2s;
     }
-
-    .submit-button:hover {
-      background-color: #005fa3;
-    }
-
+    .submit-button:hover { background:#005fa3; }
     .message {
-      margin-top: 15px;
-      padding: 12px;
-      border-radius: 6px;
-      display: none;
-      font-weight: 500;
+      margin-top:15px; padding:12px; border-radius:6px;
+      display:none; font-weight:500; text-align:center;
     }
-
-    .success {
-      background-color: #e0f7e9;
-      color: #2e7d32;
-    }
-
-    .error {
-      background-color: #fdecea;
-      color: #b00020;
-    }
+    .success { background:#e0f7e9; color:#2e7d32; }
+    .error   { background:#fdecea; color:#b00020; }
   </style>
 </head>
 <body>
 
-  <form id="workOrderForm" action="#" method="POST" novalidate>
+  <form id="workOrderForm" novalidate>
     <h2>Work Order Submission</h2>
 
     <div class="form-field">
       <label for="orderId">Work Order ID</label>
-      <input type="text" id="orderId" name="orderId" required>
+      <input type="text" id="orderId" required>
     </div>
 
     <div class="form-field">
       <label for="requestedBy">Requested By</label>
-      <input type="text" id="requestedBy" name="requestedBy" required>
+      <input type="text" id="requestedBy" required>
     </div>
 
     <div class="form-field">
       <label for="department">Department</label>
-      <input type="text" id="department" name="department" required>
+      <input type="text" id="department" required>
     </div>
 
     <div class="form-field">
       <label for="dueDate">Due Date</label>
-      <input type="date" id="dueDate" name="dueDate" required>
+      <input type="date" id="dueDate" required>
     </div>
 
     <div class="form-field">
       <label for="description">Work Description</label>
-      <textarea id="description" name="description" rows="4" required></textarea>
+      <textarea id="description" rows="4" required></textarea>
     </div>
 
-    <div class="form-field">
-      <button type="submit" class="submit-button">Submit</button>
-    </div>
+    <button type="submit" class="submit-button">Submit</button>
 
-    <div class="message success" id="successMessage">✅ Work order submitted successfully!</div>
-    <div class="message error" id="errorMessage">⚠️ Please complete all required fields.</div>
+    <div class="message success" id="successMessage">
+      ✅ Work order submitted successfully!
+    </div>
+    <div class="message error" id="errorMessage">
+      ⚠️ There was an error submitting the work order.
+    </div>
   </form>
 
   <script>
-    const form = document.getElementById('workOrderForm');
-    const successMessage = document.getElementById('successMessage');
-    const errorMessage = document.getElementById('errorMessage');
+    const form         = document.getElementById('workOrderForm');
+    const okMsg        = document.getElementById('successMessage');
+    const errMsg       = document.getElementById('errorMessage');
 
-    form.addEventListener('submit', function(event) {
-      event.preventDefault();
-      successMessage.style.display = 'none';
-      errorMessage.style.display = 'none';
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      okMsg.style.display = errMsg.style.display = 'none';
 
-      const orderId = document.getElementById('orderId').value.trim();
-      const requestedBy = document.getElementById('requestedBy').value.trim();
-      const department = document.getElementById('department').value.trim();
-      const dueDate = document.getElementById('dueDate').value;
-      const description = document.getElementById('description').value.trim();
+      const payload = {
+        work_order_id:  document.getElementById('orderId').value.trim(),
+        requested_by:   document.getElementById('requestedBy').value.trim(),
+        department:     document.getElementById('department').value.trim(),
+        due_date:       document.getElementById('dueDate').value,
+        description:    document.getElementById('description').value.trim()
+      };
 
-      if (orderId && requestedBy && department && dueDate && description) {
-        successMessage.style.display = 'block';
+      console.log('🔍 work-order payload:', payload);
+
+      // Basic client validation
+      if (!payload.work_order_id || !payload.requested_by || !payload.department
+          || !payload.due_date || !payload.description) {
+        errMsg.textContent = '⚠️ Please complete all fields.';
+        return errMsg.style.display = 'block';
+      }
+
+      try {
+        const res = await fetch('/api/work-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+
         form.reset();
-        setTimeout(() => successMessage.style.display = 'none', 3000);
-      } else {
-        errorMessage.style.display = 'block';
-        setTimeout(() => errorMessage.style.display = 'none', 3000);
+        okMsg.style.display = 'block';
+        setTimeout(() => okMsg.style.display = 'none', 3000);
+      } catch (err) {
+        console.error('Submit error:', err);
+        errMsg.textContent = '⚠️ Server error — could not save work order.';
+        errMsg.style.display = 'block';
       }
     });
   </script>
-
 </body>
 </html>
