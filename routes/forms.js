@@ -166,23 +166,23 @@ router.get('/work-order', async (req, res) => {
 });
 
 /* 5) Maintenance Request */
-
 // POST /api/maintenance-request
 router.post('/maintenance-request', async (req, res) => {
   console.log('📬 maintenance-request payload:', req.body);
   const {
-    machineId,
-    reportedBy,   // should be numeric user/staff ID
+    equipmentId,
+    issueDescription,
+    requestedBy,
     priority,
-    description,
-    dateReported  // YYYY-MM-DD
+    dateReported
   } = req.body;
 
+  // Validate presence + types
   if (
-    !machineId ||
-    typeof reportedBy !== 'number' ||
+    !equipmentId ||
+    typeof requestedBy !== 'number' ||
+    !issueDescription ||
     !priority ||
-    !description ||
     !dateReported
   ) {
     return res.status(400).send('❗ Invalid payload');
@@ -194,7 +194,7 @@ router.post('/maintenance-request', async (req, res) => {
       INSERT INTO dbo.MaintenanceRequest
         (equipment_id, issue_description, requested_by, priority, date_reported, status, timestamp)
       VALUES
-        (${machineId}, ${description}, ${reportedBy}, ${priority}, ${dateReported}, 'Pending', GETDATE())
+        (${equipmentId}, ${issueDescription}, ${requestedBy}, ${priority}, ${dateReported}, 'Pending', GETDATE())
     `;
     res.status(200).send('✅ Maintenance request saved');
   } catch (err) {
