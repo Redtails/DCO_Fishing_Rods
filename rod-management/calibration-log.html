@@ -5,6 +5,7 @@
   <title>Calibration Log Entry</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    /* (same styles as before…) */
     body {
       font-family: "Segoe UI", Roboto, sans-serif;
       background-color: #f2f2f2;
@@ -15,90 +16,39 @@
       align-items: center;
       min-height: 100vh;
     }
-
     form {
-      background-color: #ffffff;
+      background-color: #fff;
       padding: 30px 40px;
       border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
       width: 100%;
       max-width: 600px;
     }
-
-    h2 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 25px;
-    }
-
-    .form-field {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #333;
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-sizing: border-box;
+    .form-field { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+    input, textarea {
+      width: 100%; padding: 12px; font-size: 16px;
+      border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;
       transition: border-color 0.2s ease;
     }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #0078d7;
-      outline: none;
-    }
-
+    input:focus, textarea:focus { border-color: #0078d7; outline: none; }
     .submit-button {
-      background-color: #0078d7;
-      color: #ffffff;
-      font-size: 16px;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-      transition: background-color 0.2s ease;
+      background-color: #0078d7; color: #fff; font-size: 16px;
+      padding: 12px 20px; border: none; border-radius: 6px;
+      cursor: pointer; width: 100%; transition: background-color 0.2s ease;
     }
-
-    .submit-button:hover {
-      background-color: #005fa3;
-    }
-
+    .submit-button:hover { background-color: #005fa3; }
     .message {
-      margin-top: 15px;
-      padding: 12px;
-      border-radius: 6px;
-      display: none;
-      font-weight: 500;
+      margin-top: 15px; padding: 12px; border-radius: 6px;
+      display: none; font-weight: 500;
     }
-
-    .success {
-      background-color: #e0f7e9;
-      color: #2e7d32;
-    }
-
-    .error {
-      background-color: #fdecea;
-      color: #b00020;
-    }
+    .success { background-color: #e0f7e9; color: #2e7d32; }
+    .error   { background-color: #fdecea; color: #b00020; }
   </style>
 </head>
 <body>
 
-  <form id="calibrationForm" action="#" method="POST" novalidate>
+  <form id="calibrationForm" novalidate>
     <h2>Calibration Log Entry</h2>
 
     <div class="form-field">
@@ -107,7 +57,7 @@
     </div>
 
     <div class="form-field">
-      <label for="calibratedBy">Calibrated By</label>
+      <label for="calibratedBy">Calibrated By (Staff ID)</label>
       <input type="text" id="calibratedBy" name="calibratedBy" required>
     </div>
 
@@ -130,36 +80,73 @@
       <button type="submit" class="submit-button">Submit</button>
     </div>
 
-    <div class="message success" id="successMessage">✅ Calibration entry logged successfully!</div>
-    <div class="message error" id="errorMessage">⚠️ Please complete all required fields.</div>
+    <div class="message success" id="successMessage">
+      ✅ Calibration entry logged successfully!
+    </div>
+    <div class="message error" id="errorMessage">
+      ⚠️ There was a problem. Please check your entries and try again.
+    </div>
   </form>
 
   <script>
     const form = document.getElementById('calibrationForm');
     const successMessage = document.getElementById('successMessage');
-    const errorMessage = document.getElementById('errorMessage');
+    const errorMessage   = document.getElementById('errorMessage');
 
-    form.addEventListener('submit', function(event) {
+    form.addEventListener('submit', async event => {
       event.preventDefault();
       successMessage.style.display = 'none';
-      errorMessage.style.display = 'none';
+      errorMessage.style.display   = 'none';
 
-      const toolId = document.getElementById('toolId').value.trim();
-      const calibratedBy = document.getElementById('calibratedBy').value.trim();
-      const calibrationDate = document.getElementById('calibrationDate').value;
-      const nextDueDate = document.getElementById('nextDueDate').value;
-      const results = document.getElementById('results').value.trim();
+      // grab & trim
+      const toolId          = document.getElementById('toolId').value.trim();
+      const calibratedByStr = document.getElementById('calibratedBy').value.trim();
+      const calibrationDate= document.getElementById('calibrationDate').value;
+      const nextDueDate    = document.getElementById('nextDueDate').value;
+      const results        = document.getElementById('results').value.trim();
 
-      if (toolId && calibratedBy && calibrationDate && nextDueDate && results) {
+      // parse staff ID to number
+      const calibratedBy = parseInt(calibratedByStr, 10);
+
+      // validation—note the corrected if-statement
+      if (
+        !toolId ||
+        !calibrationDate ||
+        isNaN(calibratedBy) ||
+        !nextDueDate ||
+        !results
+      ) {
+        return errorMessage.style.display = 'block';
+      }
+
+      // build payload
+      const payload = {
+        equipmentId:  toolId,
+        calibrationDate,
+        calibratedBy,
+        nextDueDate,
+        notes: results
+      };
+
+      try {
+        const resp = await fetch('/api/calibration-log', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(payload)
+        });
+
+        if (!resp.ok) {
+          const text = await resp.text();
+          throw new Error(text || resp.status);
+        }
+
         successMessage.style.display = 'block';
         form.reset();
-        setTimeout(() => successMessage.style.display = 'none', 3000);
-      } else {
+      } catch (err) {
+        console.error('❌ calibration-log error:', err);
         errorMessage.style.display = 'block';
-        setTimeout(() => errorMessage.style.display = 'none', 3000);
       }
     });
   </script>
-
 </body>
 </html>
