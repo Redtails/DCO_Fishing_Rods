@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -97,7 +98,7 @@
 </head>
 <body>
 
-  <form id="maintenanceForm" action="#" method="POST" novalidate>
+  <form id="maintenanceForm" novalidate>
     <h2>Maintenance Request</h2>
 
     <div class="form-field">
@@ -106,7 +107,7 @@
     </div>
 
     <div class="form-field">
-      <label for="reportedBy">Reported By</label>
+      <label for="reportedBy">Reported By (Staff ID)</label>
       <input type="text" id="reportedBy" name="reportedBy" required>
     </div>
 
@@ -135,34 +136,71 @@
       <button type="submit" class="submit-button">Submit</button>
     </div>
 
-    <div class="message success" id="successMessage">✅ Request submitted successfully!</div>
-    <div class="message error" id="errorMessage">⚠️ Please complete all required fields.</div>
+    <div class="message success" id="successMessage">
+      ✅ Request submitted successfully!
+    </div>
+    <div class="message error" id="errorMessage">
+      ⚠️ Please complete all required fields.
+    </div>
   </form>
 
   <script>
     const form = document.getElementById('maintenanceForm');
     const successMessage = document.getElementById('successMessage');
-    const errorMessage = document.getElementById('errorMessage');
+    const errorMessage   = document.getElementById('errorMessage');
 
-    form.addEventListener('submit', function(event) {
+    form.addEventListener('submit', async event => {
       event.preventDefault();
       successMessage.style.display = 'none';
-      errorMessage.style.display = 'none';
+      errorMessage.style.display   = 'none';
 
-      const machineId = document.getElementById('machineId').value.trim();
-      const reportedBy = document.getElementById('reportedBy').value.trim();
-      const priority = document.getElementById('priority').value;
-      const description = document.getElementById('description').value.trim();
+      // grab & trim
+      const machineIdStr = document.getElementById('machineId').value.trim();
+      const reportedByStr= document.getElementById('reportedBy').value.trim();
+      const priority     = document.getElementById('priority').value;
+      const description  = document.getElementById('description').value.trim();
       const dateReported = document.getElementById('dateReported').value;
 
-      const payload = { machineId, reportedBy, priority, description, dateReported };
-      console.log('🔍 maintenance-request payload:', payload);
+      // parse staff ID
+      const requestedBy = parseInt(reportedByStr, 10);
 
-      if (machineId && reportedBy && priority && description && dateReported) {
+      // validation
+      if (
+        !machineIdStr ||
+        isNaN(requestedBy) ||
+        !priority ||
+        !description ||
+        !dateReported
+      ) {
+        return errorMessage.style.display = 'block';
+      }
+
+      // build payload
+      const payload = {
+        equipmentId:    machineIdStr,
+        issueDescription: description,
+        requestedBy,
+        priority,
+        dateReported
+      };
+
+      try {
+        const resp = await fetch('/api/maintenance-request', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(payload)
+        });
+
+        if (!resp.ok) {
+          const text = await resp.text();
+          throw new Error(text || resp.status);
+        }
+
         successMessage.style.display = 'block';
         form.reset();
         setTimeout(() => successMessage.style.display = 'none', 3000);
-      } else {
+      } catch (err) {
+        console.error('❌ maintenance-request error:', err);
         errorMessage.style.display = 'block';
         setTimeout(() => errorMessage.style.display = 'none', 3000);
       }
