@@ -166,6 +166,7 @@ router.get('/work-order', async (req, res) => {
 });
 
 /* 5) Maintenance Request */
+
 // POST /api/maintenance-request
 router.post('/maintenance-request', async (req, res) => {
   console.log('📬 maintenance-request payload:', req.body);
@@ -177,7 +178,6 @@ router.post('/maintenance-request', async (req, res) => {
     dateReported
   } = req.body;
 
-  // validate presence & types
   if (
     !equipmentId ||
     typeof requestedBy !== 'number' ||
@@ -237,7 +237,6 @@ router.get('/maintenance-request', async (req, res) => {
   }
 });
 
-
 /* 6) Calibration Log Entry */
 
 // POST /api/calibration-log
@@ -277,6 +276,30 @@ router.get('/calibration-log', async (req, res) => {
     res.status(500).send(err.message);
   }
 });
+
+/* 7) Add New User Endpoint */
+
+// POST /api/add-user
+router.post('/add-user', async (req, res) => {
+  console.log('📬 add-user payload:', req.body);
+  const { username, password, role } = req.body;
+  if (!username || !password || !role) {
+    return res.status(400).send('❗ Missing required fields (username, password, role)');
+  }
+  try {
+    await sql.connect(config);
+    await sql.query`
+      INSERT INTO dbo.Users (username, password, role, created_at)
+      VALUES (${username}, ${password}, ${role}, GETDATE())
+    `;
+    res.status(201).send('✅ User created');
+  } catch (err) {
+    console.error('Error creating user:', err);
+    res.status(500).send(err.message);
+  }
+});
+
+// (You can add GET /api/users, DELETE, etc. here as needed.)
 
 module.exports = router;
 
