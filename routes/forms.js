@@ -1,6 +1,7 @@
 // routes/forms.js
 const express = require('express');
 const sql     = require('mssql');
+const bcrypt  = require('bcrypt');
 const config  = require('../db/config');
 
 const router = express.Router();
@@ -260,33 +261,37 @@ router.get('/calibration-log', async (req, res) => {
 
 /* 7) Add New User Endpoint */
 
-// POST /api/add-user
-router.post('/add-user', async (req, res) => {
-  console.log('📬 add-user payload:', req.body);
-  const { username, password, role } = req.body;
-
-  if (!username || !password || !role) {
-    return res.status(400).send('❗ Missing required fields (username, password, role)');
-  }
-
+// POST /api/login
+router.post('/login', async (req, res) => {
+  const { username, password } = req.body;
   try {
     await sql.connect(config);
+    const result = await new sql.Request()
+      .input('username', sql.VarChar(50), username)
+      .query('SELECT user_id, username, password_hash, role FROM dbo.Users WHERE username = @username');
 
-    const request = new sql.Request();
-    request
-      .input('username',     sql.VarChar(50),  username)
-      .input('passwordHash', sql.VarChar(255), password)  // hashing should happen upstream
-      .input('role',         sql.VarChar(20),  role);
+    if (!result.recordset.length) {
+      return res.status(401).send('Invalid login');
+    }
 
-    await request.query(`
-      INSERT INTO dbo.Users (username, password_hash, role)
-      VALUES (@username, @passwordHash, @role);
-    `);
+    const user = result.recordset[0];
+    const match = await bcrypt.compare(password, user.password_hash);
+    if (!match) {
+      return res.status(401).send('Invalid login');
+    }
 
-    res.status(201).send('✅ User created');
+    // at this point: authenticated!
+    // e.g. issue a JWT or set a session cookie:
+    // req.session.user = { id: user.user_id, role: user.role };
+
+    return res.json({
+      userId: user.user_id,
+      username: user.username,
+      role:     user.role
+    });
   } catch (err) {
-    console.error('Error creating user:', err);
-    res.status(500).send('Internal Server Error: ' + err.message);
+    console.error('Login error:', err);
+    res.status(500).send('Server error');
   }
 });
 
