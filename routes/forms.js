@@ -171,13 +171,7 @@ router.get('/work-order', async (req, res) => {
 // POST /api/maintenance-request
 router.post('/maintenance-request', async (req, res) => {
   console.log('📬 maintenance-request payload:', req.body);
-  const {
-    equipmentId,
-    issueDescription,
-    requestedBy,
-    priority,
-    dateReported
-  } = req.body;
+  const { equipmentId, issueDescription, requestedBy, priority, dateReported } = req.body;
 
   if (
     !equipmentId ||
@@ -261,6 +255,35 @@ router.get('/calibration-log', async (req, res) => {
 
 /* 7) Add New User Endpoint */
 
+// POST /api/add-user
+router.post('/add-user', async (req, res) => {
+  const { username, password, role } = req.body;
+  if (!username || !password || !role) {
+    return res.status(400).send('❗ Missing username, password or role');
+  }
+
+  try {
+    await sql.connect(config);
+    const hash = await bcrypt.hash(password, 10);
+
+    await new sql.Request()
+      .input('username',     sql.VarChar(50),  username)
+      .input('passwordHash', sql.VarChar(255), hash)
+      .input('role',         sql.VarChar(20),  role)
+      .query(`
+        INSERT INTO dbo.Users (username, password_hash, role)
+        VALUES (@username, @passwordHash, @role)
+      `);
+
+    res.status(201).send('✅ User created');
+  } catch (err) {
+    console.error('Error creating user:', err);
+    res.status(500).send('Internal Server Error: ' + err.message);
+  }
+});
+
+/* 8) Login Endpoint */
+
 // POST /api/login
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
@@ -268,7 +291,11 @@ router.post('/login', async (req, res) => {
     await sql.connect(config);
     const result = await new sql.Request()
       .input('username', sql.VarChar(50), username)
-      .query('SELECT user_id, username, password_hash, role FROM dbo.Users WHERE username = @username');
+      .query(`
+        SELECT user_id, username, password_hash, role
+        FROM dbo.Users
+        WHERE username = @username
+      `);
 
     if (!result.recordset.length) {
       return res.status(401).send('Invalid login');
@@ -280,12 +307,8 @@ router.post('/login', async (req, res) => {
       return res.status(401).send('Invalid login');
     }
 
-    // at this point: authenticated!
-    // e.g. issue a JWT or set a session cookie:
-    // req.session.user = { id: user.user_id, role: user.role };
-
-    return res.json({
-      userId: user.user_id,
+    res.json({
+      userId:   user.user_id,
       username: user.username,
       role:     user.role
     });
@@ -294,7 +317,6 @@ router.post('/login', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-
 
 module.exports = router;
 
