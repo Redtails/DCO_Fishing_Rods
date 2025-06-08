@@ -25,10 +25,7 @@
       padding: 1rem;
       line-height: 1.5;
     }
-    header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
+    header { text-align: center; margin-bottom: 2rem; }
     .logo {
       display: inline-flex;
       align-items: center;
@@ -42,22 +39,21 @@
     .logo span { margin-left: 0.5rem; }
 
     .grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-      max-width: 1280px;
-      margin: 0 auto;
+      position: relative;
+      width: 100%;
+      height: calc(100vh - 100px);
     }
-    @media (min-width: 768px) { .grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (min-width: 1200px) { .grid { grid-template-columns: repeat(3, 1fr); } }
-
     .card {
+      position: absolute;
       background: var(--card-bg);
       border-radius: var(--radius);
       box-shadow: 0 2px 8px var(--shadow);
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      width: 300px;
+      height: 300px;
+      padding-bottom: 1rem;
     }
     .card-header {
       background: var(--primary);
@@ -65,8 +61,9 @@
       padding: 0.75rem 1rem;
       font-weight: 600;
       font-size: 1.1rem;
+      cursor: move;
     }
-    .table-wrap { overflow-x: auto; }
+    .table-wrap { overflow: auto; flex: 1; }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -77,10 +74,7 @@
       border-bottom: 1px solid var(--border);
       text-align: left;
     }
-    th {
-      background: var(--secondary);
-      font-weight: 500;
-    }
+    th { background: var(--secondary); font-weight: 500; }
     tr:nth-child(even) td { background: var(--secondary); }
     tr:hover td { background: var(--hover); }
     tr:last-child td { border-bottom: none; }
@@ -93,13 +87,17 @@
       color: #fff;
     }
   </style>
+  <!-- Interact.js for drag & resize -->
+  <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
 </head>
 <body>
   <header>
     <div class="logo">📝<span>DCO Reports Dashboard</span></div>
   </header>
-  <main class="grid">
-    <section class="card">
+
+  <main class="grid" id="grid">
+    <!-- Defect Entries Card -->
+    <section class="card" id="card1" style="top:20px; left:20px;">
       <div class="card-header">Defect Entries</div>
       <div class="table-wrap">
         <table id="defect-table">
@@ -110,7 +108,9 @@
         </table>
       </div>
     </section>
-    <section class="card">
+
+    <!-- Inventory Updates Card -->
+    <section class="card" id="card2" style="top:20px; left:350px;">
       <div class="card-header">Inventory Updates</div>
       <div class="table-wrap">
         <table id="inventory-table">
@@ -121,7 +121,9 @@
         </table>
       </div>
     </section>
-    <section class="card">
+
+    <!-- Inspection Reports Card -->
+    <section class="card" id="card3" style="top:20px; left:680px;">
       <div class="card-header">Inspection Reports</div>
       <div class="table-wrap">
         <table id="inspection-table">
@@ -132,7 +134,9 @@
         </table>
       </div>
     </section>
-    <section class="card">
+
+    <!-- Maintenance Requests Card -->
+    <section class="card" id="card4" style="top:340px; left:20px;">
       <div class="card-header">Maintenance Requests</div>
       <div class="table-wrap">
         <table id="maintenance-table">
@@ -143,7 +147,9 @@
         </table>
       </div>
     </section>
-    <section class="card">
+
+    <!-- Calibration Logs Card -->
+    <section class="card" id="card5" style="top:340px; left:350px;">
       <div class="card-header">Calibration Logs</div>
       <div class="table-wrap">
         <table id="calibration-table">
@@ -155,31 +161,90 @@
       </div>
     </section>
   </main>
+
   <script>
-    async function loadData(endpoint, tableId, mapper) {
-      try {
-        const res = await fetch(`/api/${endpoint}`);
-        if (!res.ok) throw new Error(`Error ${res.status}`);
-        const data = await res.json();
-        const tbody = document.getElementById(tableId).querySelector('tbody');
-        tbody.innerHTML = '';
-        data.forEach(item => {
-          const tr = document.createElement('tr');
-          mapper(item, tr);
-          tbody.appendChild(tr);
-        });
-      } catch (e) {
-        console.error(e);
-        document.getElementById(tableId).insertAdjacentHTML('afterend', `<p style="color:red">Failed to load ${endpoint}</p>`);
-      }
+    // Enable dragging & resizing on cards
+    interact('.card')
+      .draggable({
+        inertia: true,
+        modifiers: [
+          interact.modifiers.restrictRect({ restriction: '#grid', endOnly: true })
+        ],
+        listeners: {
+          move(event) {
+            const t = event.target;
+            const x = (parseFloat(t.getAttribute('data-x')) || 0) + event.dx;
+            const y = (parseFloat(t.getAttribute('data-y')) || 0) + event.dy;
+            t.style.transform = `translate(${x}px, ${y}px)`;
+            t.setAttribute('data-x', x);
+            t.setAttribute('data-y', y);
+          }
+        }
+      })
+      .resizable({
+        edges: { left:true, right:true, bottom:true, top:true },
+        modifiers: [
+          interact.modifiers.restrictSize({ min: { width: 200, height: 150 } })
+        ],
+        inertia: true,
+        listeners: {
+          move(event) {
+            const t = event.target;
+            let x = parseFloat(t.getAttribute('data-x')) || 0;
+            let y = parseFloat(t.getAttribute('data-y')) || 0;
+            t.style.width  = event.rect.width + 'px';
+            t.style.height = event.rect.height + 'px';
+            x += event.deltaRect.left;
+            y += event.deltaRect.top;
+            t.style.transform = `translate(${x}px, ${y}px)`;
+            t.setAttribute('data-x', x);
+            t.setAttribute('data-y', y);
+          }
+        }
+      });
+
+    
+    // Load saved layout for current user
+    const username = sessionStorage.getItem('username') || 'guest';
+    const layoutKey = `dashboard_layout_${username}`;
+    const saved = localStorage.getItem(layoutKey);
+    if (saved) {
+      const positions = JSON.parse(saved);
+      Object.entries(positions).forEach(([id, pos]) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.style.width = pos.width + 'px';
+          el.style.height = pos.height + 'px';
+          el.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+          el.setAttribute('data-x', pos.x);
+          el.setAttribute('data-y', pos.y);
+        }
+      });
     }
-    document.addEventListener('DOMContentLoaded', () => {
-      loadData('defect-entry', 'defect-table', (item, tr) => tr.innerHTML = `<td>${item.batch_id}</td><td>${item.defect_type}</td><td>${item.shift}</td><td>${item.technician_id}</td><td>${item.notes}</td><td>${new Date(item.timestamp).toLocaleString()}</td>`);
-      loadData('inventory-update', 'inventory-table', (item, tr) => tr.innerHTML = `<td>${item.item_id}</td><td>${item.quantity}</td><td>${item.reason_code}</td><td>${item.staff_id}</td><td>${new Date(item.timestamp).toLocaleString()}</td>`);
-      loadData('inspection-report', 'inspection-table', (item, tr) => tr.innerHTML = `<td>${item.batch_id}</td><td>${item.shift}</td><td>${item.inspector_id}</td><td>${item.findings}</td><td>${new Date(item.timestamp).toLocaleString()}</td>`);
-      loadData('maintenance-request', 'maintenance-table', (item, tr) => tr.innerHTML = `<td>${item.equipment_id}</td><td>${item.issue_description}</td><td>${item.requested_by}</td><td>${item.status||'Pending'}</td><td>${new Date(item.timestamp).toLocaleString()}</td>`);
-      loadData('calibration-log', 'calibration-table', (item, tr) => tr.innerHTML = `<td>${item.equipment_id}</td><td>${new Date(item.calibration_date).toLocaleDateString()}</td><td>${item.calibrated_by}</td><td>${item.next_due_date}</td><td>${item.notes}</td><td>${new Date(item.timestamp).toLocaleString()}</td>`);
-    });
+
+    // On drag or resize end, save new layout
+    function saveLayout() {
+      const positions = {};
+      document.querySelectorAll('.card').forEach(el => {
+        const id = el.id;
+        const x = parseFloat(el.getAttribute('data-x')) || 0;
+        const y = parseFloat(el.getAttribute('data-y')) || 0;
+        positions[id] = {
+          x,
+          y,
+          width: el.offsetWidth,
+          height: el.offsetHeight
+        };
+      });
+      localStorage.setItem(layoutKey, JSON.stringify(positions));
+    }
+
+    interact('.card')
+      .on('dragend', saveLayout)
+      .on('resizeend', saveLayout);
+
+    // End persistence logic
   </script>
 </body>
 </html>
+
