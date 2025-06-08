@@ -4,191 +4,182 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reports</title>
+  <title>📝 DCO Reports Dashboard</title>
   <style>
-    /* Use default system fonts */
+    :root {
+      --primary: #005a9e;
+      --secondary: #f7f9fc;
+      --accent: #0078d7;
+      --text: #333;
+      --card-bg: #ffffff;
+      --border: #e1e4e8;
+      --hover: #eef3f8;
+      --radius: 8px;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: sans-serif;
-      margin: 20px;
-      background-color: #f9f9f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--secondary);
+      color: var(--text);
+      padding: 1rem;
+      line-height: 1.5;
     }
-    h1 {
+    header {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 2rem;
     }
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      background: var(--primary);
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 6px var(--shadow);
+      color: #fff;
+      font-size: 1.75rem;
+    }
+    .logo span { margin-left: 0.5rem; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    @media (min-width: 768px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1200px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 2px 8px var(--shadow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .card-header {
+      background: var(--primary);
+      color: #fff;
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    .table-wrap { overflow-x: auto; }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 40px;
+      font-size: 0.9rem;
     }
     th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--border);
       text-align: left;
     }
     th {
-      background-color: #eee;
+      background: var(--secondary);
+      font-weight: 500;
+    }
+    tr:nth-child(even) td { background: var(--secondary); }
+    tr:hover td { background: var(--hover); }
+    tr:last-child td { border-bottom: none; }
+    .badge {
+      display: inline-block;
+      padding: 0.25em 0.5em;
+      font-size: 0.75rem;
+      border-radius: 4px;
+      background: var(--accent);
+      color: #fff;
     }
   </style>
 </head>
 <body>
-  <h1>📝 Reports Dashboard</h1>
-
-  <section>
-    <h2>Defect Entries</h2>
-    <table id="defect-table">
-      <thead>
-        <tr>
-          <th>Batch ID</th>
-          <th>Type</th>
-          <th>Shift</th>
-          <th>Technician</th>
-          <th>Notes</th>
-          <th>Timestamp</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
-
-  <section>
-    <h2>Inventory Updates</h2>
-    <table id="inventory-table">
-      <thead>
-        <tr>
-          <th>Item ID</th>
-          <th>Quantity</th>
-          <th>Reason Code</th>
-          <th>Staff ID</th>
-          <th>Timestamp</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
-
-  <section>
-    <h2>Inspection Reports</h2>
-    <table id="inspection-table">
-      <thead>
-        <tr>
-          <th>Batch ID</th>
-          <th>Shift</th>
-          <th>Inspector ID</th>
-          <th>Findings</th>
-          <th>Timestamp</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
-
-  <section>
-    <h2>Maintenance Requests</h2>
-    <table id="maintenance-table">
-      <thead>
-        <tr>
-          <th>Equipment ID</th>
-          <th>Description</th>
-          <th>Requested By</th>
-          <th>Status</th>
-          <th>Timestamp</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
-
-  <section>
-    <h2>Calibration Logs</h2>
-    <table id="calibration-table">
-      <thead>
-        <tr>
-          <th>Equipment ID</th>
-          <th>Calibration Date</th>
-          <th>Calibrated By</th>
-          <th>Next Due Date</th>
-          <th>Notes</th>
-          <th>Timestamp</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
-
+  <header>
+    <div class="logo">📝<span>DCO Reports Dashboard</span></div>
+  </header>
+  <main class="grid">
+    <section class="card">
+      <div class="card-header">Defect Entries</div>
+      <div class="table-wrap">
+        <table id="defect-table">
+          <thead>
+            <tr><th>Batch ID</th><th>Type</th><th>Shift</th><th>Technician</th><th>Notes</th><th>Timestamp</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="card">
+      <div class="card-header">Inventory Updates</div>
+      <div class="table-wrap">
+        <table id="inventory-table">
+          <thead>
+            <tr><th>Item ID</th><th>Quantity</th><th>Reason Code</th><th>Staff ID</th><th>Timestamp</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="card">
+      <div class="card-header">Inspection Reports</div>
+      <div class="table-wrap">
+        <table id="inspection-table">
+          <thead>
+            <tr><th>Batch ID</th><th>Shift</th><th>Inspector ID</th><th>Findings</th><th>Timestamp</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="card">
+      <div class="card-header">Maintenance Requests</div>
+      <div class="table-wrap">
+        <table id="maintenance-table">
+          <thead>
+            <tr><th>Equipment ID</th><th>Description</th><th>Requested By</th><th>Status</th><th>Timestamp</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="card">
+      <div class="card-header">Calibration Logs</div>
+      <div class="table-wrap">
+        <table id="calibration-table">
+          <thead>
+            <tr><th>Equipment ID</th><th>Cal Date</th><th>By</th><th>Next Due</th><th>Notes</th><th>Timestamp</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
   <script>
-    console.log('Reports script loaded');
-
-    // Generic loader
     async function loadData(endpoint, tableId, mapper) {
       try {
         const res = await fetch(`/api/${endpoint}`);
-        if (!res.ok) throw new Error(`Fetch ${endpoint} failed: ${res.status}`);
+        if (!res.ok) throw new Error(`Error ${res.status}`);
         const data = await res.json();
         const tbody = document.getElementById(tableId).querySelector('tbody');
         tbody.innerHTML = '';
         data.forEach(item => {
-          const row = document.createElement('tr');
-          mapper(item, row);
-          tbody.appendChild(row);
+          const tr = document.createElement('tr');
+          mapper(item, tr);
+          tbody.appendChild(tr);
         });
-      } catch (err) {
-        console.error(err);
-        const section = document.getElementById(tableId);
-        section.insertAdjacentHTML('afterend', `<p style="color:red;">Error loading ${endpoint}</p>`);
+      } catch (e) {
+        console.error(e);
+        document.getElementById(tableId).insertAdjacentHTML('afterend', `<p style="color:red">Failed to load ${endpoint}</p>`);
       }
     }
-
     document.addEventListener('DOMContentLoaded', () => {
-      loadData('defect-entry', 'defect-table', (item, tr) => {
-        tr.innerHTML = `
-          <td>${item.batch_id}</td>
-          <td>${item.defect_type}</td>
-          <td>${item.shift}</td>
-          <td>${item.technician_id}</td>
-          <td>${item.notes}</td>
-          <td>${new Date(item.timestamp).toLocaleString()}</td>
-        `;
-      });
-      loadData('inventory-update', 'inventory-table', (item, tr) => {
-        tr.innerHTML = `
-          <td>${item.item_id}</td>
-          <td>${item.quantity}</td>
-          <td>${item.reason_code}</td>
-          <td>${item.staff_id}</td>
-          <td>${new Date(item.timestamp).toLocaleString()}</td>
-        `;
-      });
-      loadData('inspection-report', 'inspection-table', (item, tr) => {
-        tr.innerHTML = `
-          <td>${item.batch_id}</td>
-          <td>${item.shift}</td>
-          <td>${item.inspector_id}</td>
-          <td>${item.findings}</td>
-          <td>${new Date(item.timestamp).toLocaleString()}</td>
-        `;
-      });
-      loadData('maintenance-request', 'maintenance-table', (item, tr) => {
-        tr.innerHTML = `
-          <td>${item.equipment_id}</td>
-          <td>${item.issue_description}</td>
-          <td>${item.requested_by}</td>
-          <td>${item.status || 'Pending'}</td>
-          <td>${new Date(item.timestamp).toLocaleString()}</td>
-        `;
-      });
-      loadData('calibration-log', 'calibration-table', (item, tr) => {
-        tr.innerHTML = `
-          <td>${item.equipment_id}</td>
-          <td>${new Date(item.calibration_date).toLocaleDateString()}</td>
-          <td>${item.calibrated_by}</td>
-          <td>${item.next_due_date}</td>
-          <td>${item.notes}</td>
-          <td>${new Date(item.timestamp).toLocaleString()}</td>
-        `;
-      });
+      loadData('defect-entry', 'defect-table', (item, tr) => tr.innerHTML = `<td>${item.batch_id}</td><td>${item.defect_type}</td><td>${item.shift}</td><td>${item.technician_id}</td><td>${item.notes}</td><td>${new Date(item.timestamp).toLocaleString()}</td>`);
+      loadData('inventory-update', 'inventory-table', (item, tr) => tr.innerHTML = `<td>${item.item_id}</td><td>${item.quantity}</td><td>${item.reason_code}</td><td>${item.staff_id}</td><td>${new Date(item.timestamp).toLocaleString()}</td>`);
+      loadData('inspection-report', 'inspection-table', (item, tr) => tr.innerHTML = `<td>${item.batch_id}</td><td>${item.shift}</td><td>${item.inspector_id}</td><td>${item.findings}</td><td>${new Date(item.timestamp).toLocaleString()}</td>`);
+      loadData('maintenance-request', 'maintenance-table', (item, tr) => tr.innerHTML = `<td>${item.equipment_id}</td><td>${item.issue_description}</td><td>${item.requested_by}</td><td>${item.status||'Pending'}</td><td>${new Date(item.timestamp).toLocaleString()}</td>`);
+      loadData('calibration-log', 'calibration-table', (item, tr) => tr.innerHTML = `<td>${item.equipment_id}</td><td>${new Date(item.calibration_date).toLocaleDateString()}</td><td>${item.calibrated_by}</td><td>${item.next_due_date}</td><td>${item.notes}</td><td>${new Date(item.timestamp).toLocaleString()}</td>`);
     });
   </script>
 </body>
 </html>
-
