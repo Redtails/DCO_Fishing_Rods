@@ -187,26 +187,13 @@ router.post('/maintenance-request', async (req, res) => {
   ) {
     return res.status(400).send('❗ Invalid payload');
   }
-
   try {
     await sql.connect(config);
     await sql.query`
       INSERT INTO dbo.MaintenanceRequest
-        (equipment_id,
-         issue_description,
-         requested_by,
-         priority,
-         date_reported,
-         status,
-         timestamp)
+        (equipment_id, issue_description, requested_by, priority, date_reported, status, timestamp)
       VALUES
-        (${equipmentId},
-         ${issueDescription},
-         ${requestedBy},
-         ${priority},
-         ${dateReported},
-         'Pending',
-         GETDATE())
+        (${equipmentId}, ${issueDescription}, ${requestedBy}, ${priority}, ${dateReported}, 'Pending', GETDATE())
     `;
     res.status(200).send('✅ Maintenance request saved');
   } catch (err) {
@@ -220,13 +207,7 @@ router.get('/maintenance-request', async (req, res) => {
   try {
     await sql.connect(config);
     const result = await sql.query`
-      SELECT equipment_id,
-             issue_description,
-             requested_by,
-             priority,
-             date_reported,
-             status,
-             timestamp
+      SELECT equipment_id, issue_description, requested_by, priority, date_reported, status, timestamp
       FROM dbo.MaintenanceRequest
       ORDER BY timestamp DESC
     `;
@@ -298,8 +279,6 @@ router.post('/add-user', async (req, res) => {
     res.status(500).send(err.message);
   }
 });
-
-// (You can add GET /api/users, DELETE, etc. here as needed.)
 
 module.exports = router;
 
