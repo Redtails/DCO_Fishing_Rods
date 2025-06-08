@@ -264,21 +264,32 @@ router.get('/calibration-log', async (req, res) => {
 router.post('/add-user', async (req, res) => {
   console.log('📬 add-user payload:', req.body);
   const { username, password, role } = req.body;
+
   if (!username || !password || !role) {
     return res.status(400).send('❗ Missing required fields (username, password, role)');
   }
+
   try {
     await sql.connect(config);
-    await sql.query`
-      INSERT INTO dbo.Users (username, password, role, created_at)
-      VALUES (${username}, ${password}, ${role}, GETDATE())
-    `;
+
+    const request = new sql.Request();
+    request
+      .input('username',     sql.VarChar(50),  username)
+      .input('passwordHash', sql.VarChar(255), password)  // hashing should happen upstream
+      .input('role',         sql.VarChar(20),  role);
+
+    await request.query(`
+      INSERT INTO dbo.Users (username, password_hash, role)
+      VALUES (@username, @passwordHash, @role);
+    `);
+
     res.status(201).send('✅ User created');
   } catch (err) {
     console.error('Error creating user:', err);
-    res.status(500).send(err.message);
+    res.status(500).send('Internal Server Error: ' + err.message);
   }
 });
+
 
 module.exports = router;
 
