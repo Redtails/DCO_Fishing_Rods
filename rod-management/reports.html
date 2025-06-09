@@ -6,245 +6,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>📝 DCO Reports Dashboard</title>
   <style>
-    :root {
-      --primary: #005a9e;
-      --secondary: #f7f9fc;
-      --accent: #0078d7;
-      --text: #333;
-      --card-bg: #ffffff;
-      --border: #e1e4e8;
-      --hover: #eef3f8;
-      --radius: 8px;
-      --shadow: rgba(0, 0, 0, 0.1);
-    }
+    :root { --primary:#005a9e;--secondary:#f7f9fc;--accent:#0078d7;--text:#333;--card-bg:#fff;--border:#e1e4e8;--hover:#eef3f8;--radius:8px;--shadow:rgba(0,0,0,0.1);}    
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--secondary);
-      color: var(--text);
-      padding: 1rem;
-      line-height: 1.5;
-    }
-    header { text-align: center; margin-bottom: 2rem; }
-    .logo {
-      display: inline-flex;
-      align-items: center;
-      background: var(--primary);
-      padding: 0.75rem 1.5rem;
-      border-radius: var(--radius);
-      box-shadow: 0 2px 6px var(--shadow);
-      color: #fff;
-      font-size: 1.75rem;
-    }
-    .logo span { margin-left: 0.5rem; }
-
-    .grid {
-      position: relative;
-      width: 100%;
-      height: calc(100vh - 100px);
-    }
-    .card {
-      position: absolute;
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      box-shadow: 0 2px 8px var(--shadow);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      width: 300px;
-      height: 300px;
-      padding-bottom: 1rem;
-    }
-    .card-header {
-      background: var(--primary);
-      color: #fff;
-      padding: 0.75rem 1rem;
-      font-weight: 600;
-      font-size: 1.1rem;
-      cursor: move;
-    }
-    .table-wrap { overflow: auto; flex: 1; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-    th, td {
-      padding: 0.5rem 0.75rem;
-      border-bottom: 1px solid var(--border);
-      text-align: left;
-    }
-    th { background: var(--secondary); font-weight: 500; }
-    tr:nth-child(even) td { background: var(--secondary); }
-    tr:hover td { background: var(--hover); }
-    tr:last-child td { border-bottom: none; }
-    .badge {
-      display: inline-block;
-      padding: 0.25em 0.5em;
-      font-size: 0.75rem;
-      border-radius: 4px;
-      background: var(--accent);
-      color: #fff;
-    }
+    body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background: var(--secondary); color: var(--text); padding:1rem; }
+    header { text-align:center; margin-bottom:1rem; }
+    .logo { display:inline-flex; align-items:center; background:var(--primary); padding:0.75rem 1.5rem; border-radius:var(--radius); box-shadow:0 2px 6px var(--shadow); color:#fff; font-size:1.5rem; }
+    .logo span { margin-left:0.5rem; }
+    .grid { position:relative; width:100%; height:calc(100vh - 100px); }
+    .card { position:absolute; background:var(--card-bg); border-radius:var(--radius); box-shadow:0 2px 8px var(--shadow); display:flex; flex-direction:column; overflow:hidden; width:300px; height:300px; }
+    .card-header { background:var(--primary); color:#fff; padding:0.5rem 1rem; font-weight:600; cursor:move; }
+    .table-wrap { overflow:auto; flex:1; }
+    table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+    th,td { padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); text-align:left; }
+    th { background:var(--secondary); font-weight:500; }
+    tr:nth-child(even) td { background:var(--secondary); }
+    tr:hover td { background:var(--hover); }
+    tr:last-child td { border-bottom:none; }
   </style>
-  <!-- Interact.js for drag & resize -->
   <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
 </head>
 <body>
-  <header>
-    <div class="logo">📝<span>DCO Reports Dashboard</span></div>
-  </header>
-
+  <header><div class="logo">📝<span>DCO Reports Dashboard</span></div></header>
   <main class="grid" id="grid">
-    <!-- Defect Entries Card -->
-    <section class="card" id="card1" style="top:20px; left:20px;">
-      <div class="card-header">Defect Entries</div>
-      <div class="table-wrap">
-        <table id="defect-table">
-          <thead>
-            <tr><th>Batch ID</th><th>Type</th><th>Shift</th><th>Technician</th><th>Notes</th><th>Timestamp</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- Inventory Updates Card -->
-    <section class="card" id="card2" style="top:20px; left:350px;">
-      <div class="card-header">Inventory Updates</div>
-      <div class="table-wrap">
-        <table id="inventory-table">
-          <thead>
-            <tr><th>Item ID</th><th>Quantity</th><th>Reason Code</th><th>Staff ID</th><th>Timestamp</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- Inspection Reports Card -->
-    <section class="card" id="card3" style="top:20px; left:680px;">
-      <div class="card-header">Inspection Reports</div>
-      <div class="table-wrap">
-        <table id="inspection-table">
-          <thead>
-            <tr><th>Batch ID</th><th>Shift</th><th>Inspector ID</th><th>Findings</th><th>Timestamp</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- Maintenance Requests Card -->
-    <section class="card" id="card4" style="top:340px; left:20px;">
-      <div class="card-header">Maintenance Requests</div>
-      <div class="table-wrap">
-        <table id="maintenance-table">
-          <thead>
-            <tr><th>Equipment ID</th><th>Description</th><th>Requested By</th><th>Status</th><th>Timestamp</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- Calibration Logs Card -->
-    <section class="card" id="card5" style="top:340px; left:350px;">
-      <div class="card-header">Calibration Logs</div>
-      <div class="table-wrap">
-        <table id="calibration-table">
-          <thead>
-            <tr><th>Equipment ID</th><th>Cal Date</th><th>By</th><th>Next Due</th><th>Notes</th><th>Timestamp</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
+    <section class="card" id="card1" style="top:20px;left:20px;"><div class="card-header">Defect Entries</div><div class="table-wrap"><table id="defect-table"><thead><tr><th>Batch ID</th><th>Type</th><th>Shift</th><th>Technician</th><th>Notes</th><th>Timestamp</th></tr></thead><tbody></tbody></table></div></section>
+    <section class="card" id="card2" style="top:20px;left:350px;"><div class="card-header">Inventory Updates</div><div class="table-wrap"><table id="inventory-table"><thead><tr><th>Item ID</th><th>Quantity</th><th>Reason Code</th><th>Staff ID</th><th>Timestamp</th></tr></thead><tbody></tbody></table></div></section>
+    <section class="card" id="card3" style="top:20px;left:680px;"><div class="card-header">Inspection Reports</div><div class="table-wrap"><table id="inspection-table"><thead><tr><th>Batch ID</th><th>Shift</th><th>Inspector ID</th><th>Findings</th><th>Timestamp</th></tr></thead><tbody></tbody></table></div></section>
+    <section class="card" id="card4" style="top:340px;left:20px;"><div class="card-header">Maintenance Requests</div><div class="table-wrap"><table id="maintenance-table"><thead><tr><th>Equipment ID</th><th>Description</th><th>Requested By</th><th>Status</th><th>Timestamp</th></tr></thead><tbody></tbody></table></div></section>
+    <section class="card" id="card5" style="top:340px;left:350px;"><div class="card-header">Calibration Logs</div><div class="table-wrap"><table id="calibration-table"><thead><tr><th>Equipment ID</th><th>Cal Date</th><th>By</th><th>Next Due</th><th>Notes</th><th>Timestamp</th></tr></thead><tbody></tbody></table></div></section>
   </main>
-
   <script>
-    // Enable dragging & resizing on cards
-    interact('.card')
-      .draggable({
-        inertia: true,
-        modifiers: [
-          interact.modifiers.restrictRect({ restriction: '#grid', endOnly: true })
-        ],
-        listeners: {
-          move(event) {
-            const t = event.target;
-            const x = (parseFloat(t.getAttribute('data-x')) || 0) + event.dx;
-            const y = (parseFloat(t.getAttribute('data-y')) || 0) + event.dy;
-            t.style.transform = `translate(${x}px, ${y}px)`;
-            t.setAttribute('data-x', x);
-            t.setAttribute('data-y', y);
-          }
-        }
-      })
-      .resizable({
-        edges: { left:true, right:true, bottom:true, top:true },
-        modifiers: [
-          interact.modifiers.restrictSize({ min: { width: 200, height: 150 } })
-        ],
-        inertia: true,
-        listeners: {
-          move(event) {
-            const t = event.target;
-            let x = parseFloat(t.getAttribute('data-x')) || 0;
-            let y = parseFloat(t.getAttribute('data-y')) || 0;
-            t.style.width  = event.rect.width + 'px';
-            t.style.height = event.rect.height + 'px';
-            x += event.deltaRect.left;
-            y += event.deltaRect.top;
-            t.style.transform = `translate(${x}px, ${y}px)`;
-            t.setAttribute('data-x', x);
-            t.setAttribute('data-y', y);
-          }
-        }
-      });
-
-    
-    // Load saved layout for current user
-    const username = sessionStorage.getItem('username') || 'guest';
-    const layoutKey = `dashboard_layout_${username}`;
-    const saved = localStorage.getItem(layoutKey);
-    if (saved) {
-      const positions = JSON.parse(saved);
-      Object.entries(positions).forEach(([id, pos]) => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.style.width = pos.width + 'px';
-          el.style.height = pos.height + 'px';
-          el.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
-          el.setAttribute('data-x', pos.x);
-          el.setAttribute('data-y', pos.y);
-        }
-      });
+    // Data-loading function
+    async function loadData(endpoint,id, map){
+      try{ const r=await fetch(`/api/${endpoint}`); if(!r.ok) throw ''; const d=await r.json(); const b=document.getElementById(id).querySelector('tbody'); b.innerHTML=''; d.forEach(i=>{const tr=document.createElement('tr'); map(i,tr);b.appendChild(tr);});
+      }catch(e){console.error(e);}
     }
-
-    // On drag or resize end, save new layout
-    function saveLayout() {
-      const positions = {};
-      document.querySelectorAll('.card').forEach(el => {
-        const id = el.id;
-        const x = parseFloat(el.getAttribute('data-x')) || 0;
-        const y = parseFloat(el.getAttribute('data-y')) || 0;
-        positions[id] = {
-          x,
-          y,
-          width: el.offsetWidth,
-          height: el.offsetHeight
-        };
-      });
-      localStorage.setItem(layoutKey, JSON.stringify(positions));
+    // Load all tables
+    function populateAll(){
+      loadData('defect-entry','defect-table',(i,tr)=>tr.innerHTML=`<td>${i.batch_id}</td><td>${i.defect_type}</td><td>${i.shift}</td><td>${i.technician_id}</td><td>${i.notes}</td><td>${new Date(i.timestamp).toLocaleString()}</td>`);
+      loadData('inventory-update','inventory-table',(i,tr)=>tr.innerHTML=`<td>${i.item_id}</td><td>${i.quantity}</td><td>${i.reason_code}</td><td>${i.staff_id}</td><td>${new Date(i.timestamp).toLocaleString()}</td>`);
+      loadData('inspection-report','inspection-table',(i,tr)=>tr.innerHTML=`<td>${i.batch_id}</td><td>${i.shift}</td><td>${i.inspector_id}</td><td>${i.findings}</td><td>${new Date(i.timestamp).toLocaleString()}</td>`);
+      loadData('maintenance-request','maintenance-table',(i,tr)=>tr.innerHTML=`<td>${i.equipment_id}</td><td>${i.issue_description}</td><td>${i.requested_by}</td><td>${i.status}</td><td>${new Date(i.timestamp).toLocaleString()}</td>`);
+      loadData('calibration-log','calibration-table',(i,tr)=>tr.innerHTML=`<td>${i.equipment_id}</td><td>${new Date(i.calibration_date).toLocaleDateString()}</td><td>${i.calibrated_by}</td><td>${i.next_due_date}</td><td>${i.notes}</td><td>${new Date(i.timestamp).toLocaleString()}</td>`);
     }
+    document.addEventListener('DOMContentLoaded', ()=>{ populateAll(); applyLayout(); });
 
-    interact('.card')
-      .on('dragend', saveLayout)
-      .on('resizeend', saveLayout);
+    // Interact.js for drag/resize
+    interact('.card').draggable({inertia:true, modifiers:[interact.modifiers.restrictRect({restriction:'#grid',endOnly:true})],listeners:{move(e){const t=e.target;const x=(parseFloat(t.getAttribute('data-x'))||0)+e.dx;const y=(parseFloat(t.getAttribute('data-y'))||0)+e.dy; t.style.transform=`translate(${x}px,${y}px)`;t.setAttribute('data-x',x);t.setAttribute('data-y',y);}}}).resizable({edges:{left:true,right:true,bottom:true,top:true},modifiers:[interact.modifiers.restrictSize({min:{width:200,height:150}})],inertia:true,listeners:{move(e){const t=e.target;let x=parseFloat(t.getAttribute('data-x'))||0;let y=parseFloat(t.getAttribute('data-y'))||0; t.style.width=e.rect.width+'px';t.style.height=e.rect.height+'px'; x+=e.deltaRect.left; y+=e.deltaRect.top; t.style.transform=`translate(${x}px,${y}px)`;t.setAttribute('data-x',x);t.setAttribute('data-y',y);}}});
 
-    // End persistence logic
+    // Persistence
+    const username=sessionStorage.getItem('username')||'guest'; const key=`dashboard_layout_${username}`;
+    function applyLayout(){ const s=localStorage.getItem(key); if(s) {const p=JSON.parse(s);Object.entries(p).forEach(([id,pos])=>{const el=document.getElementById(id);if(el){ el.style.width=pos.width+'px';el.style.height=pos.height+'px';el.style.transform=`translate(${pos.x}px,${pos.y}px)`;el.setAttribute('data-x',pos.x);el.setAttribute('data-y',pos.y);} }); }}
+    function saveLayout(){ const obj={};document.querySelectorAll('.card').forEach(el=>{const id=el.id;const x=parseFloat(el.getAttribute('data-x'))||0;const y=parseFloat(el.getAttribute('data-y'))||0;obj[id]={x,y,width:el.offsetWidth,height:el.offsetHeight};});localStorage.setItem(key,JSON.stringify(obj));}
+    interact('.card').on('dragend',saveLayout).on('resizeend',saveLayout);
   </script>
 </body>
 </html>
+
 
