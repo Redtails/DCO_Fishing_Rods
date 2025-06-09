@@ -72,7 +72,11 @@
       loadData('calibration-log','calibration-table',(i,tr)=>tr.innerHTML=`<td>${i.equipment_id}</td><td>${new Date(i.calibration_date).toLocaleDateString()}</td><td>${i.calibrated_by}</td><td>${i.next_due_date}</td><td>${i.notes}</td><td>${new Date(i.timestamp).toLocaleString()}</td>`);
     }
 
-    document.addEventListener('DOMContentLoaded', ()=>{ populateAll(); applyLayout(); });
+    document.addEventListener('DOMContentLoaded', () => {
+      populateAll();
+      // safe applyLayout (no-op if not using persistence)
+      if (typeof applyLayout === 'function') applyLayout();
+    });
 
     // Draggable & resizable (omitted for brevity)
     // Persistence (omitted)
