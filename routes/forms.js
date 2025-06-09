@@ -24,13 +24,13 @@ router.post('/defect-entry', async (req, res) => {
     `;
     res.sendStatus(201);
   } catch (err) {
-    console.error(err);
+    console.error('Error inserting defect:', err);
     res.status(500).send(err.message);
   }
 });
 
 // GET /api/defect-entry
-router.get('/defect-entry', async (_, res) => {
+router.get('/defect-entry', async (_req, res) => {
   try {
     await sql.connect(config);
     const result = await sql.query`
@@ -40,7 +40,7 @@ router.get('/defect-entry', async (_, res) => {
     `;
     res.json(result.recordset);
   } catch (err) {
-    console.error(err);
+    console.error('Error reading defects:', err);
     res.status(500).send(err.message);
   }
 });
@@ -56,7 +56,7 @@ router.delete('/defect-entry/:batchId', async (req, res) => {
     `;
     res.sendStatus(204);
   } catch (err) {
-    console.error(err);
+    console.error('Error deleting defect entry:', err);
     res.status(500).send(err.message);
   }
 });
@@ -79,13 +79,13 @@ router.post('/inventory-update', async (req, res) => {
     `;
     res.sendStatus(201);
   } catch (err) {
-    console.error(err);
+    console.error('Error inserting inventory update:', err);
     res.status(500).send(err.message);
   }
 });
 
 // GET /api/inventory-update
-router.get('/inventory-update', async (_, res) => {
+router.get('/inventory-update', async (_req, res) => {
   try {
     await sql.connect(config);
     const result = await sql.query`
@@ -95,7 +95,7 @@ router.get('/inventory-update', async (_, res) => {
     `;
     res.json(result.recordset);
   } catch (err) {
-    console.error(err);
+    console.error('Error reading inventory updates:', err);
     res.status(500).send(err.message);
   }
 });
@@ -111,7 +111,7 @@ router.delete('/inventory-update/:itemId', async (req, res) => {
     `;
     res.sendStatus(204);
   } catch (err) {
-    console.error(err);
+    console.error('Error deleting inventory update:', err);
     res.status(500).send(err.message);
   }
 });
@@ -134,13 +134,13 @@ router.post('/inspection-report', async (req, res) => {
     `;
     res.sendStatus(201);
   } catch (err) {
-    console.error(err);
+    console.error('Error inserting inspection report:', err);
     res.status(500).send(err.message);
   }
 });
 
 // GET /api/inspection-report
-router.get('/inspection-report', async (_, res) => {
+router.get('/inspection-report', async (_req, res) => {
   try {
     await sql.connect(config);
     const result = await sql.query`
@@ -150,7 +150,7 @@ router.get('/inspection-report', async (_, res) => {
     `;
     res.json(result.recordset);
   } catch (err) {
-    console.error(err);
+    console.error('Error reading inspection reports:', err);
     res.status(500).send(err.message);
   }
 });
@@ -166,7 +166,7 @@ router.delete('/inspection-report/:batchId', async (req, res) => {
     `;
     res.sendStatus(204);
   } catch (err) {
-    console.error(err);
+    console.error('Error deleting inspection report:', err);
     res.status(500).send(err.message);
   }
 });
@@ -189,13 +189,13 @@ router.post('/maintenance-request', async (req, res) => {
     `;
     res.sendStatus(201);
   } catch (err) {
-    console.error(err);
+    console.error('Error inserting maintenance request:', err);
     res.status(500).send(err.message);
   }
 });
 
 // GET /api/maintenance-request
-router.get('/maintenance-request', async (_, res) => {
+router.get('/maintenance-request', async (_req, res) => {
   try {
     await sql.connect(config);
     const result = await sql.query`
@@ -205,7 +205,7 @@ router.get('/maintenance-request', async (_, res) => {
     `;
     res.json(result.recordset);
   } catch (err) {
-    console.error(err);
+    console.error('Error reading maintenance requests:', err);
     res.status(500).send(err.message);
   }
 });
@@ -221,7 +221,7 @@ router.delete('/maintenance-request/:requestId', async (req, res) => {
     `;
     res.sendStatus(204);
   } catch (err) {
-    console.error(err);
+    console.error('Error deleting maintenance request:', err);
     res.status(500).send(err.message);
   }
 });
@@ -244,13 +244,13 @@ router.post('/calibration-log', async (req, res) => {
     `;
     res.sendStatus(201);
   } catch (err) {
-    console.error(err);
+    console.error('Error inserting calibration log:', err);
     res.status(500).send(err.message);
   }
 });
 
 // GET /api/calibration-log
-router.get('/calibration-log', async (_, res) => {
+router.get('/calibration-log', async (_req, res) => {
   try {
     await sql.connect(config);
     const result = await sql.query`
@@ -260,7 +260,7 @@ router.get('/calibration-log', async (_, res) => {
     `;
     res.json(result.recordset);
   } catch (err) {
-    console.error(err);
+    console.error('Error reading calibration logs:', err);
     res.status(500).send(err.message);
   }
 });
@@ -276,7 +276,7 @@ router.delete('/calibration-log/:logId', async (req, res) => {
     `;
     res.sendStatus(204);
   } catch (err) {
-    console.error(err);
+    console.error('Error deleting calibration log:', err);
     res.status(500).send(err.message);
   }
 });
@@ -302,7 +302,7 @@ router.post('/add-user', async (req, res) => {
       `);
     res.sendStatus(201);
   } catch (err) {
-    console.error(err);
+    console.error('Error creating user:', err);
     res.status(500).send(err.message);
   }
 });
@@ -325,13 +325,28 @@ router.post('/login', async (req, res) => {
     if (!match) return res.status(401).send('Invalid login');
     res.json({ userId: user.user_id, username: user.username, role: user.role });
   } catch (err) {
-    console.error(err);
+    console.error('Login error:', err);
+    res.status(500).send(err.message);
+  }
+});
+
+/* 7) Staff Fetch Endpoint */
+// GET /api/users
+router.get('/users', async (req, res) => {
+  try {
+    await sql.connect(config);
+    const result = await sql.query`
+      SELECT user_id, username
+      FROM dbo.Users
+      ORDER BY username
+    `;
+    res.json(result.recordset);
+  } catch (err) {
+    console.error('Error fetching users:', err);
     res.status(500).send(err.message);
   }
 });
 
 module.exports = router;
-
-
 
 
