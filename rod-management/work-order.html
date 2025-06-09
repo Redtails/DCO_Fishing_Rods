@@ -3,12 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <title>Work Order Submission</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <style>
-    /* ...your styles (unchanged)... */
+    /* reset a few basics */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background-color: #f2f2f2;
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    form {
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .form-field {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #444;
+    }
+    input[type="text"],
+    input[type="date"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: border-color .2s;
+    }
+    input:focus,
+    textarea:focus {
+      border-color: #0078d7;
+      outline: none;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .submit-button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: #0078d7;
+      color: #fff;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .submit-button:hover {
+      background: #005fa3;
+    }
+    .message {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 4px;
+      font-weight: 500;
+      text-align: center;
+    }
+    .success { background: #e0f7e9; color: #2e7d32; }
+    .error   { background: #fdecea; color: #b00020; }
   </style>
 </head>
 <body>
+
   <form id="workOrderForm" novalidate>
     <h2>Work Order Submission</h2>
 
@@ -34,7 +108,7 @@
 
     <div class="form-field">
       <label for="description">Work Description</label>
-      <textarea id="description" rows="4" required></textarea>
+      <textarea id="description" required></textarea>
     </div>
 
     <button type="submit" class="submit-button">Submit</button>
@@ -53,20 +127,22 @@
       okMsg.style.display = errMsg.style.display = 'none';
 
       const payload = {
-        workOrderNo:    document.getElementById('orderId').value.trim(),
-        requestedByName:document.getElementById('requestedBy').value.trim(),  // <-- name
-        department:     document.getElementById('department').value.trim(),
-        dueDate:        document.getElementById('dueDate').value,
-        description:    document.getElementById('description').value.trim()
+        workOrderNo:     document.getElementById('orderId').value.trim(),
+        requestedByName: document.getElementById('requestedBy').value.trim(),
+        department:      document.getElementById('department').value.trim(),
+        dueDate:         document.getElementById('dueDate').value,
+        description:     document.getElementById('description').value.trim()
       };
 
-      // simple client validation
-      if (!payload.workOrderNo 
-          || !payload.requestedByName 
-          || !payload.department 
-          || !payload.dueDate 
-          || !payload.description) {
-        errMsg.textContent = '⚠️ All fields required';
+      // simple client‐side validation
+      if (
+        !payload.workOrderNo ||
+        !payload.requestedByName ||
+        !payload.department ||
+        !payload.dueDate ||
+        !payload.description
+      ) {
+        errMsg.textContent = '⚠️ All fields are required';
         return errMsg.style.display = 'block';
       }
 
@@ -83,11 +159,13 @@
         setTimeout(() => okMsg.style.display = 'none', 3000);
       } catch (err) {
         console.error(err);
-        errMsg.textContent = '⚠️ Server error';
+        errMsg.textContent = '⚠️ Server error — could not save';
         errMsg.style.display = 'block';
       }
     });
   </script>
+
 </body>
 </html>
+
 
