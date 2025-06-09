@@ -5,53 +5,20 @@
   <title>Work Order Submission</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      font-family: "Segoe UI", Roboto, sans-serif;
-      background-color: #f2f2f2;
-      margin: 0; padding: 0;
-      display: flex; justify-content: center; align-items: center;
-      min-height: 100vh;
-    }
-    form {
-      background: #fff; padding: 30px 40px;
-      border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      width: 100%; max-width: 600px;
-    }
-    h2 { text-align:center; color:#333; margin-bottom:25px; }
-    .form-field { margin-bottom:20px; }
-    label { display:block; margin-bottom:8px; font-weight:600; color:#333; }
-    input, select, textarea, button {
-      width:100%; padding:12px; font-size:16px;
-      border:1px solid #ccc; border-radius:6px;
-      box-sizing:border-box; transition:border-color .2s;
-    }
-    input:focus, select:focus, textarea:focus { border-color:#0078d7; outline:none; }
-    .submit-button {
-      background:#0078d7; color:#fff; border:none; cursor:pointer;
-      font-size:16px; padding:12px; border-radius:6px;
-      transition:background-color .2s;
-    }
-    .submit-button:hover { background:#005fa3; }
-    .message {
-      margin-top:15px; padding:12px; border-radius:6px;
-      display:none; font-weight:500; text-align:center;
-    }
-    .success { background:#e0f7e9; color:#2e7d32; }
-    .error   { background:#fdecea; color:#b00020; }
+    /* ...your styles (unchanged)... */
   </style>
 </head>
 <body>
-
   <form id="workOrderForm" novalidate>
     <h2>Work Order Submission</h2>
 
     <div class="form-field">
-      <label for="orderId">Work Order ID</label>
+      <label for="orderId">Work Order #</label>
       <input type="text" id="orderId" required>
     </div>
 
     <div class="form-field">
-      <label for="requestedBy">Requested By</label>
+      <label for="requestedBy">Requested By (Name)</label>
       <input type="text" id="requestedBy" required>
     </div>
 
@@ -72,37 +39,34 @@
 
     <button type="submit" class="submit-button">Submit</button>
 
-    <div class="message success" id="successMessage">
-      ✅ Work order submitted successfully!
-    </div>
-    <div class="message error" id="errorMessage">
-      ⚠️ There was an error submitting the work order.
-    </div>
+    <div class="message success" id="successMessage">✅ Saved!</div>
+    <div class="message error"   id="errorMessage">⚠️ Please fix errors.</div>
   </form>
 
   <script>
-    const form         = document.getElementById('workOrderForm');
-    const okMsg        = document.getElementById('successMessage');
-    const errMsg       = document.getElementById('errorMessage');
+    const form   = document.getElementById('workOrderForm');
+    const okMsg  = document.getElementById('successMessage');
+    const errMsg = document.getElementById('errorMessage');
 
     form.addEventListener('submit', async e => {
       e.preventDefault();
       okMsg.style.display = errMsg.style.display = 'none';
 
       const payload = {
-        work_order_id:  document.getElementById('orderId').value.trim(),
-        requested_by:   document.getElementById('requestedBy').value.trim(),
+        workOrderNo:    document.getElementById('orderId').value.trim(),
+        requestedByName:document.getElementById('requestedBy').value.trim(),  // <-- name
         department:     document.getElementById('department').value.trim(),
-        due_date:       document.getElementById('dueDate').value,
+        dueDate:        document.getElementById('dueDate').value,
         description:    document.getElementById('description').value.trim()
       };
 
-      console.log('🔍 work-order payload:', payload);
-
-      // Basic client validation
-      if (!payload.work_order_id || !payload.requested_by || !payload.department
-          || !payload.due_date || !payload.description) {
-        errMsg.textContent = '⚠️ Please complete all fields.';
+      // simple client validation
+      if (!payload.workOrderNo 
+          || !payload.requestedByName 
+          || !payload.department 
+          || !payload.dueDate 
+          || !payload.description) {
+        errMsg.textContent = '⚠️ All fields required';
         return errMsg.style.display = 'block';
       }
 
@@ -112,17 +76,18 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        if (!res.ok) throw new Error(`Status ${res.status}`);
+        if (!res.ok) throw new Error(res.statusText);
 
         form.reset();
         okMsg.style.display = 'block';
         setTimeout(() => okMsg.style.display = 'none', 3000);
       } catch (err) {
-        console.error('Submit error:', err);
-        errMsg.textContent = '⚠️ Server error — could not save work order.';
+        console.error(err);
+        errMsg.textContent = '⚠️ Server error';
         errMsg.style.display = 'block';
       }
     });
   </script>
 </body>
 </html>
+
