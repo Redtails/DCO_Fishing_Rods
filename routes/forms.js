@@ -10,7 +10,6 @@ const router = express.Router();
 
 // POST /api/defect-entry
 router.post('/defect-entry', async (req, res) => {
-  console.log('📬 defect-entry payload:', req.body);
   const { batchNumber, defectType, shift, technicianId, notes } = req.body;
   if (!batchNumber || !defectType || !shift || typeof technicianId !== 'number') {
     return res.status(400).send('❗ Invalid payload');
@@ -23,15 +22,15 @@ router.post('/defect-entry', async (req, res) => {
       VALUES
         (${batchNumber}, ${defectType}, ${shift}, ${technicianId}, ${notes}, GETDATE())
     `;
-    res.status(200).send('✅ Defect entry saved');
+    res.sendStatus(201);
   } catch (err) {
-    console.error('Error inserting defect:', err);
+    console.error(err);
     res.status(500).send(err.message);
   }
 });
 
 // GET /api/defect-entry
-router.get('/defect-entry', async (req, res) => {
+router.get('/defect-entry', async (_, res) => {
   try {
     await sql.connect(config);
     const result = await sql.query`
@@ -41,7 +40,23 @@ router.get('/defect-entry', async (req, res) => {
     `;
     res.json(result.recordset);
   } catch (err) {
-    console.error('Error reading defects:', err);
+    console.error(err);
+    res.status(500).send(err.message);
+  }
+});
+
+// DELETE /api/defect-entry/:batchId
+router.delete('/defect-entry/:batchId', async (req, res) => {
+  const { batchId } = req.params;
+  try {
+    await sql.connect(config);
+    await sql.query`
+      DELETE FROM dbo.DefectReport
+      WHERE batch_id = ${batchId}
+    `;
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
     res.status(500).send(err.message);
   }
 });
@@ -50,7 +65,6 @@ router.get('/defect-entry', async (req, res) => {
 
 // POST /api/inventory-update
 router.post('/inventory-update', async (req, res) => {
-  console.log('📬 inventory-update payload:', req.body);
   const { itemId, quantity, reasonCode, staffId } = req.body;
   if (!itemId || typeof quantity !== 'number' || !reasonCode || typeof staffId !== 'number') {
     return res.status(400).send('❗ Invalid payload');
@@ -63,15 +77,15 @@ router.post('/inventory-update', async (req, res) => {
       VALUES
         (${itemId}, ${quantity}, ${reasonCode}, ${staffId}, GETDATE())
     `;
-    res.status(200).send('✅ Inventory update saved');
+    res.sendStatus(201);
   } catch (err) {
-    console.error('Error updating inventory:', err);
+    console.error(err);
     res.status(500).send(err.message);
   }
 });
 
 // GET /api/inventory-update
-router.get('/inventory-update', async (req, res) => {
+router.get('/inventory-update', async (_, res) => {
   try {
     await sql.connect(config);
     const result = await sql.query`
@@ -81,7 +95,23 @@ router.get('/inventory-update', async (req, res) => {
     `;
     res.json(result.recordset);
   } catch (err) {
-    console.error('Error reading inventory:', err);
+    console.error(err);
+    res.status(500).send(err.message);
+  }
+});
+
+// DELETE /api/inventory-update/:itemId
+router.delete('/inventory-update/:itemId', async (req, res) => {
+  const { itemId } = req.params;
+  try {
+    await sql.connect(config);
+    await sql.query`
+      DELETE FROM dbo.InventoryRecord
+      WHERE item_id = ${itemId}
+    `;
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
     res.status(500).send(err.message);
   }
 });
@@ -90,7 +120,6 @@ router.get('/inventory-update', async (req, res) => {
 
 // POST /api/inspection-report
 router.post('/inspection-report', async (req, res) => {
-  console.log('📬 inspection-report payload:', req.body);
   const { batch_id, shift, inspector_id, findings } = req.body;
   if (!batch_id || !shift || typeof inspector_id !== 'number' || !findings) {
     return res.status(400).send('❗ Invalid payload');
@@ -103,15 +132,15 @@ router.post('/inspection-report', async (req, res) => {
       VALUES
         (${batch_id}, ${shift}, ${inspector_id}, ${findings}, GETDATE())
     `;
-    res.status(200).send('✅ Inspection report saved');
+    res.sendStatus(201);
   } catch (err) {
-    console.error('Error saving inspection report:', err);
+    console.error(err);
     res.status(500).send(err.message);
   }
 });
 
 // GET /api/inspection-report
-router.get('/inspection-report', async (req, res) => {
+router.get('/inspection-report', async (_, res) => {
   try {
     await sql.connect(config);
     const result = await sql.query`
@@ -121,65 +150,33 @@ router.get('/inspection-report', async (req, res) => {
     `;
     res.json(result.recordset);
   } catch (err) {
-    console.error('Error reading inspection reports:', err);
+    console.error(err);
     res.status(500).send(err.message);
   }
 });
 
-/* 4) Work Order Submission */
-
-// POST /api/work-order
-router.post('/work-order', async (req, res) => {
-  console.log('📬 work-order payload:', req.body);
-  const { work_order_id, requested_by, department, due_date, description } = req.body;
-  if (!work_order_id || !requested_by || !department || !due_date || !description) {
-    return res.status(400).send('❗ Invalid payload');
-  }
+// DELETE /api/inspection-report/:batchId
+router.delete('/inspection-report/:batchId', async (req, res) => {
+  const { batchId } = req.params;
   try {
     await sql.connect(config);
     await sql.query`
-      INSERT INTO dbo.WorkOrder
-        (work_order_no, description, department, requested_by, due_date, timestamp)
-      VALUES
-        (${work_order_id}, ${description}, ${department}, ${requested_by}, ${due_date}, GETDATE())
+      DELETE FROM dbo.InspectionReport
+      WHERE batch_id = ${batchId}
     `;
-    res.status(200).send('✅ Work order saved');
+    res.sendStatus(204);
   } catch (err) {
-    console.error('Error saving work order:', err);
+    console.error(err);
     res.status(500).send(err.message);
   }
 });
 
-// GET /api/work-order
-router.get('/work-order', async (req, res) => {
-  try {
-    await sql.connect(config);
-    const result = await sql.query`
-      SELECT work_order_no, description, department, requested_by, due_date, timestamp
-      FROM dbo.WorkOrder
-      ORDER BY timestamp DESC
-    `;
-    res.json(result.recordset);
-  } catch (err) {
-    console.error('Error reading work orders:', err);
-    res.status(500).send(err.message);
-  }
-});
-
-/* 5) Maintenance Request */
+/* 4) Maintenance Requests */
 
 // POST /api/maintenance-request
 router.post('/maintenance-request', async (req, res) => {
-  console.log('📬 maintenance-request payload:', req.body);
   const { equipmentId, issueDescription, requestedBy, priority, dateReported } = req.body;
-
-  if (
-    !equipmentId ||
-    typeof requestedBy !== 'number' ||
-    !issueDescription ||
-    !priority ||
-    !dateReported
-  ) {
+  if (!equipmentId || typeof requestedBy !== 'number' || !issueDescription || !priority || !dateReported) {
     return res.status(400).send('❗ Invalid payload');
   }
   try {
@@ -190,34 +187,49 @@ router.post('/maintenance-request', async (req, res) => {
       VALUES
         (${equipmentId}, ${issueDescription}, ${requestedBy}, ${priority}, ${dateReported}, 'Pending', GETDATE())
     `;
-    res.status(200).send('✅ Maintenance request saved');
+    res.sendStatus(201);
   } catch (err) {
-    console.error('Error saving maintenance request:', err);
+    console.error(err);
     res.status(500).send(err.message);
   }
 });
 
 // GET /api/maintenance-request
-router.get('/maintenance-request', async (req, res) => {
+router.get('/maintenance-request', async (_, res) => {
   try {
     await sql.connect(config);
     const result = await sql.query`
-      SELECT equipment_id, issue_description, requested_by, priority, date_reported, status, timestamp
+      SELECT request_id, equipment_id, issue_description, requested_by, status, timestamp
       FROM dbo.MaintenanceRequest
       ORDER BY timestamp DESC
     `;
     res.json(result.recordset);
   } catch (err) {
-    console.error('Error reading maintenance requests:', err);
+    console.error(err);
     res.status(500).send(err.message);
   }
 });
 
-/* 6) Calibration Log Entry */
+// DELETE /api/maintenance-request/:requestId
+router.delete('/maintenance-request/:requestId', async (req, res) => {
+  const { requestId } = req.params;
+  try {
+    await sql.connect(config);
+    await sql.query`
+      DELETE FROM dbo.MaintenanceRequest
+      WHERE request_id = ${requestId}
+    `;
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err.message);
+  }
+});
+
+/* 5) Calibration Logs */
 
 // POST /api/calibration-log
 router.post('/calibration-log', async (req, res) => {
-  console.log('📬 calibration-log payload:', req.body);
   const { equipmentId, calibrationDate, calibratedBy, nextDueDate, notes } = req.body;
   if (!equipmentId || !calibrationDate || typeof calibratedBy !== 'number' || !nextDueDate) {
     return res.status(400).send('❗ Invalid payload');
@@ -230,42 +242,56 @@ router.post('/calibration-log', async (req, res) => {
       VALUES
         (${equipmentId}, ${calibrationDate}, ${calibratedBy}, ${nextDueDate}, ${notes}, GETDATE())
     `;
-    res.status(200).send('✅ Calibration log entry saved');
+    res.sendStatus(201);
   } catch (err) {
-    console.error('Error saving calibration log:', err);
+    console.error(err);
     res.status(500).send(err.message);
   }
 });
 
 // GET /api/calibration-log
-router.get('/calibration-log', async (req, res) => {
+router.get('/calibration-log', async (_, res) => {
   try {
     await sql.connect(config);
     const result = await sql.query`
-      SELECT equipment_id, calibration_date, calibrated_by, next_due_date, notes, timestamp
+      SELECT calibration_log_id, equipment_id, calibration_date, calibrated_by, next_due_date, notes, timestamp
       FROM dbo.CalibrationLog
       ORDER BY timestamp DESC
     `;
     res.json(result.recordset);
   } catch (err) {
-    console.error('Error reading calibration logs:', err);
+    console.error(err);
     res.status(500).send(err.message);
   }
 });
 
-/* 7) Add New User Endpoint */
+// DELETE /api/calibration-log/:logId
+router.delete('/calibration-log/:logId', async (req, res) => {
+  const { logId } = req.params;
+  try {
+    await sql.connect(config);
+    await sql.query`
+      DELETE FROM dbo.CalibrationLog
+      WHERE calibration_log_id = ${logId}
+    `;
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err.message);
+  }
+});
+
+/* 6) User Management */
 
 // POST /api/add-user
 router.post('/add-user', async (req, res) => {
   const { username, password, role } = req.body;
   if (!username || !password || !role) {
-    return res.status(400).send('❗ Missing username, password or role');
+    return res.status(400).send('❗ Missing fields');
   }
-
   try {
     await sql.connect(config);
     const hash = await bcrypt.hash(password, 10);
-
     await new sql.Request()
       .input('username',     sql.VarChar(50),  username)
       .input('passwordHash', sql.VarChar(255), hash)
@@ -274,15 +300,12 @@ router.post('/add-user', async (req, res) => {
         INSERT INTO dbo.Users (username, password_hash, role)
         VALUES (@username, @passwordHash, @role)
       `);
-
-    res.status(201).send('✅ User created');
+    res.sendStatus(201);
   } catch (err) {
-    console.error('Error creating user:', err);
-    res.status(500).send('Internal Server Error: ' + err.message);
+    console.error(err);
+    res.status(500).send(err.message);
   }
 });
-
-/* 8) Login Endpoint */
 
 // POST /api/login
 router.post('/login', async (req, res) => {
@@ -296,29 +319,19 @@ router.post('/login', async (req, res) => {
         FROM dbo.Users
         WHERE username = @username
       `);
-
-    if (!result.recordset.length) {
-      return res.status(401).send('Invalid login');
-    }
-
+    if (!result.recordset.length) return res.status(401).send('Invalid login');
     const user = result.recordset[0];
     const match = await bcrypt.compare(password, user.password_hash);
-    if (!match) {
-      return res.status(401).send('Invalid login');
-    }
-
-    res.json({
-      userId:   user.user_id,
-      username: user.username,
-      role:     user.role
-    });
+    if (!match) return res.status(401).send('Invalid login');
+    res.json({ userId: user.user_id, username: user.username, role: user.role });
   } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).send('Server error');
+    console.error(err);
+    res.status(500).send(err.message);
   }
 });
 
 module.exports = router;
+
 
 
 
